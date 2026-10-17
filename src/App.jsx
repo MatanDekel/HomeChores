@@ -96,6 +96,25 @@ export default function Root() {
           members: [{ id: firebaseUser.uid, name: userData.name, email: userData.email, avatar: userData.avatar, role: "owner" }],
           createdAt: serverTimestamp(),
         });
+
+        // Seed default areas for new household
+        const defaultAreas = [
+          { name: "מטבח",             emoji: "🍳", color: "#ffb3ba" },
+          { name: "סלון",             emoji: "🛋️", color: "#ffdfba" },
+          { name: "שירותי אורחים",    emoji: "🚿", color: "#bae1ff" },
+          { name: "שירותי ילדים",     emoji: "🧸", color: "#baffc9" },
+          { name: "שירותי הורים",     emoji: "🛁", color: "#e8baff" },
+          { name: "משרד",             emoji: "🖥️", color: "#fff0ba" },
+          { name: "חדר הורים",        emoji: "🛏️", color: "#ffc8dd" },
+          { name: "חדר מדפסת",        emoji: "📦", color: "#c9f0ff" },
+          { name: "ממ״ד",             emoji: "🚪", color: "#d4f5d4" },
+          { name: "מרפסת",            emoji: "🪴", color: "#a2d2ff" },
+          { name: "חדר כביסה",        emoji: "🧺", color: "#ffd6a5" },
+        ];
+        for (const area of defaultAreas) {
+          const areaRef = doc(collection(db, "households", hid, "areas"));
+          await setDoc(areaRef, { ...area, id: areaRef.id });
+        }
         // Check for pending invite
         const inviteRef = doc(db, "invites", firebaseUser.email);
         const inviteSnap = await getDoc(inviteRef);
