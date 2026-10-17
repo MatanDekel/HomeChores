@@ -26,6 +26,19 @@ const UNITS = [
 ];
 const TASK_EMOJIS  = ["🧹","🧺","🪣","🫧","🚿","🛁","🪥","🧽","🫙","🗑️","🪴","🛋️","🪟","🚪","🍽️","🥘","🧊","🧻","🛏️","🧸","📦","🪞","💡","🖼️","🏠","🌿","🌊","🧴","🪒","🫗","🧲","🪤"];
 const AREA_EMOJIS  = ["🏠","🛋️","🍳","🛁","🛏️","🪴","🚗","📚","🎮","💼","🌿","🪟","🏡","🧺","🍵","🖥️"];
+const SUGGESTED_AREAS = [
+  { name: "Kitchen",          emoji: "🍳", color: "#ffb3ba" },
+  { name: "Living Room",      emoji: "🛋️", color: "#ffdfba" },
+  { name: "Guest Bathroom",   emoji: "🚿", color: "#bae1ff" },
+  { name: "Kids Bathroom",    emoji: "🧸", color: "#baffc9" },
+  { name: "Parents Bathroom", emoji: "🛁", color: "#e8baff" },
+  { name: "Office",           emoji: "🖥️", color: "#fff0ba" },
+  { name: "Master Bedroom",   emoji: "🛏️", color: "#ffc8dd" },
+  { name: "Printer Room",     emoji: "📦", color: "#c9f0ff" },
+  { name: "Safe Room",        emoji: "🚪", color: "#d4f5d4" },
+  { name: "Balcony",          emoji: "🪴", color: "#a2d2ff" },
+  { name: "Laundry Room",     emoji: "🧺", color: "#ffd6a5" },
+];
 const PALETTE      = ["#ffb3ba","#ffdfba","#ffffba","#baffc9","#bae1ff","#e8baff","#ffd6e7","#c9f0ff","#d4f5d4","#fff0ba","#ffc8dd","#a2d2ff"];
 const DAY_SHORT    = ["S","M","T","W","T","F","S"];
 const DAY_EMOJI    = ["🌟","🌸","🌻","🌈","🎉","🎊","🌙"];
@@ -97,24 +110,6 @@ export default function Root() {
           createdAt: serverTimestamp(),
         });
 
-        // Seed default areas for new household
-        const defaultAreas = [
-          { name: "מטבח",             emoji: "🍳", color: "#ffb3ba" },
-          { name: "סלון",             emoji: "🛋️", color: "#ffdfba" },
-          { name: "שירותי אורחים",    emoji: "🚿", color: "#bae1ff" },
-          { name: "שירותי ילדים",     emoji: "🧸", color: "#baffc9" },
-          { name: "שירותי הורים",     emoji: "🛁", color: "#e8baff" },
-          { name: "משרד",             emoji: "🖥️", color: "#fff0ba" },
-          { name: "חדר הורים",        emoji: "🛏️", color: "#ffc8dd" },
-          { name: "חדר מדפסת",        emoji: "📦", color: "#c9f0ff" },
-          { name: "ממ״ד",             emoji: "🚪", color: "#d4f5d4" },
-          { name: "מרפסת",            emoji: "🪴", color: "#a2d2ff" },
-          { name: "חדר כביסה",        emoji: "🧺", color: "#ffd6a5" },
-        ];
-        for (const area of defaultAreas) {
-          const areaRef = doc(collection(db, "households", hid, "areas"));
-          await setDoc(areaRef, { ...area, id: areaRef.id });
-        }
         // Check for pending invite
         const inviteRef = doc(db, "invites", firebaseUser.email);
         const inviteSnap = await getDoc(inviteRef);
@@ -800,8 +795,20 @@ function AreaModal({ area, onSave, onClose }) {
               border:`2.5px solid ${emoji===e?"#ff85a1":"transparent"}`}}>{e}</div>
         ))}
       </div>
+      <Label>Quick Pick</Label>
+      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
+        {SUGGESTED_AREAS.map(s=>(
+          <div key={s.name} className="bn" onClick={()=>{setName(s.name);setEmoji(s.emoji);setColor(s.color);}}
+            style={{padding:"5px 11px",borderRadius:20,cursor:"pointer",fontSize:12,fontWeight:700,
+              background: name===s.name ? s.color : "#f5f5f5",
+              border:`2px solid ${name===s.name ? s.color+"bb" : "transparent"}`,
+              color:"#555",display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap"}}>
+            {s.emoji} {s.name}
+          </div>
+        ))}
+      </div>
       <Label>Area Name</Label>
-      <FInput className="fi" value={name} onChange={e=>setName(e.target.value)} placeholder="Kitchen, Bathroom, Garden…" autoFocus onKeyDown={e=>e.key==="Enter"&&submit()}/>
+      <FInput className="fi" value={name} onChange={e=>setName(e.target.value)} placeholder="Kitchen, Bathroom…" autoFocus onKeyDown={e=>e.key==="Enter"&&submit()}/>
       <Label>Color</Label>
       <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
         {PALETTE.map(c=>(
