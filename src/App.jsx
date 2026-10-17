@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
 
-// ─── Storage helpers (localStorage for real app) ───────────────────────────────
+// ─── Storage helpers ───────────────────────────────────────────────────────────
 async function sget(key)     { try { const v=localStorage.getItem(key); return v?JSON.parse(v):null; } catch { return null; } }
 async function sset(key,val) { try { localStorage.setItem(key,JSON.stringify(val)); } catch {} }
 async function sdel(key)     { try { localStorage.removeItem(key); } catch {} }
-
-async function sset(key,val)  { try { await window.storage.set(key,JSON.stringify(val)); } catch {} }
-async function sdel(key)      { try { await window.storage.delete(key); } catch {} }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const DEPTHS = [
