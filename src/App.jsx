@@ -337,6 +337,7 @@ function App({ user, onLogout }) {
   const [calDate,     setCalDate]     = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [showAccount, setShowAccount] = useState(false);
+  const [filterArea,  setFilterArea]  = useState(null);
 
   // ── Real-time Firestore listeners ──
   useEffect(() => {
@@ -528,13 +529,46 @@ function App({ user, onLogout }) {
         {/* TASKS */}
         {tab==="tasks"&&(
           <div className="fu">
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
               <div style={{fontFamily:"'Fredoka One',cursive",fontSize:22,color:"#ff6b9d"}}>📋 All Tasks</div>
               <PastelBtn onClick={()=>setTaskModal({})}>＋ New Task</PastelBtn>
             </div>
-            {tasks.length===0?<Empty emoji="📋" text="No tasks yet!" sub="Tap + New Task to get started"/>
-              :<div style={{display:"flex",flexDirection:"column",gap:10}}>
-                {tasks.map((task,i)=>{
+            {/* Area filter chips */}
+            <div style={{display:"flex",gap:6,overflowX:"auto",marginBottom:16,paddingBottom:4}}>
+              <div className="bn" onClick={()=>setFilterArea(null)}
+                style={{padding:"6px 14px",borderRadius:20,whiteSpace:"nowrap",flexShrink:0,
+                  background:filterArea===null?"linear-gradient(135deg,#ffb3ba,#c9f0ff)":"#f5f5f5",
+                  border:`2px solid ${filterArea===null?"#ff85a1":"transparent"}`,
+                  fontSize:13,fontWeight:800,color:filterArea===null?"#ff6b9d":"#bbb"}}>
+                🏠 All
+              </div>
+              <div className="bn" onClick={()=>setFilterArea("none")}
+                style={{padding:"6px 14px",borderRadius:20,whiteSpace:"nowrap",flexShrink:0,
+                  background:filterArea==="none"?"linear-gradient(135deg,#ffb3ba,#c9f0ff)":"#f5f5f5",
+                  border:`2px solid ${filterArea==="none"?"#ff85a1":"transparent"}`,
+                  fontSize:13,fontWeight:800,color:filterArea==="none"?"#ff6b9d":"#bbb"}}>
+                ❓ No area
+              </div>
+              {areas.map(a=>(
+                <div key={a.id} className="bn" onClick={()=>setFilterArea(a.id)}
+                  style={{padding:"6px 14px",borderRadius:20,whiteSpace:"nowrap",flexShrink:0,
+                    background:filterArea===a.id?a.color:"#f5f5f5",
+                    border:`2px solid ${filterArea===a.id?a.color+"bb":"transparent"}`,
+                    fontSize:13,fontWeight:800,color:filterArea===a.id?"#555":"#bbb"}}>
+                  {a.emoji} {a.name}
+                </div>
+              ))}
+            </div>
+            {(() => {
+              const filtered = tasks.filter(t =>
+                filterArea===null ? true :
+                filterArea==="none" ? !t.areaId :
+                t.areaId===filterArea
+              );
+              return filtered.length===0
+                ?<Empty emoji="🔍" text="No tasks here!" sub="Try a different filter"/>
+                :<div style={{display:"flex",flexDirection:"column",gap:10}}>
+                {filtered.map((task,i)=>{
                   const area=areas.find(a=>a.id===task.areaId);
                   const dep=DEPTHS.find(d=>d.label===task.depth)||DEPTHS[0];
                   return(
@@ -559,7 +593,8 @@ function App({ user, onLogout }) {
                     </div>
                   );
                 })}
-              </div>}
+              </div>;
+              })()}
           </div>
         )}
 
