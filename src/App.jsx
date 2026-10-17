@@ -34,12 +34,12 @@ const SUGGESTED_AREAS = [
   { name: "Parents Bathroom", emoji: "🛁", color: "#e8baff" },
   { name: "Office",           emoji: "🖥️", color: "#fff0ba" },
   { name: "Master Bedroom",   emoji: "🛏️", color: "#ffc8dd" },
-  { name: "Printer Room",     emoji: "📦", color: "#c9f0ff" },
-  { name: "Safe Room",        emoji: "🚪", color: "#d4f5d4" },
-  { name: "Balcony",          emoji: "🪴", color: "#a2d2ff" },
-  { name: "Laundry Room",     emoji: "🧺", color: "#ffd6a5" },
+  { name: "Printer Room",     emoji: "📦", color: "#c9c9c9" },
+  { name: "Safe Room",        emoji: "🚪", color: "#c4a882" },
+  { name: "Balcony",          emoji: "🪴", color: "#a8c5a0" },
+  { name: "Laundry Room",     emoji: "🧺", color: "#d4b896" },
 ];
-const PALETTE      = ["#ffb3ba","#ffdfba","#ffffba","#baffc9","#bae1ff","#e8baff","#ffd6e7","#c9f0ff","#d4f5d4","#fff0ba","#ffc8dd","#a2d2ff"];
+const PALETTE      = ["#ffb3ba","#ffdfba","#ffffba","#baffc9","#bae1ff","#e8baff","#ffd6e7","#c9f0ff","#d4f5d4","#fff0ba","#ffc8dd","#a2d2ff","#d4b896","#c9c9c9","#b5d5b5","#8fbc8f","#c4a882","#b0b0b0","#e8d5c4","#a8c5a0"];
 const DAY_SHORT    = ["S","M","T","W","T","F","S"];
 const DAY_EMOJI    = ["🌟","🌸","🌻","🌈","🎉","🎊","🌙"];
 const MONTH_NAMES  = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -119,10 +119,10 @@ export default function Root() {
           { name: "Parents Bathroom",  emoji: "🛁", color: "#e8baff" },
           { name: "Office",            emoji: "🖥️", color: "#fff0ba" },
           { name: "Master Bedroom",    emoji: "🛏️", color: "#ffc8dd" },
-          { name: "Printer Room",      emoji: "📦", color: "#c9f0ff" },
-          { name: "Safe Room",         emoji: "🚪", color: "#d4f5d4" },
-          { name: "Balcony",           emoji: "🪴", color: "#a2d2ff" },
-          { name: "Laundry Room",      emoji: "🧺", color: "#ffd6a5" },
+          { name: "Printer Room",      emoji: "📦", color: "#c9c9c9" },
+          { name: "Safe Room",         emoji: "🚪", color: "#c4a882" },
+          { name: "Balcony",           emoji: "🪴", color: "#a8c5a0" },
+          { name: "Laundry Room",      emoji: "🧺", color: "#d4b896" },
         ];
         for (const area of defaultAreas) {
           const areaRef = doc(collection(db, "households", hid, "areas"));
@@ -245,7 +245,7 @@ function AuthScreen() {
         <button className="bn" onClick={handleGoogle} disabled={loading}
           style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"center",gap:10,
             padding:"12px",borderRadius:16,border:"2px solid #e8e8e8",background:"#fff",
-            fontSize:14,fontWeight:800,color:"#444",cursor:"pointer",marginBottom:16,fontFamily:"inherit",
+            fontSize:16,fontWeight:800,color:"#444",cursor:"pointer",marginBottom:16,fontFamily:"inherit",
             boxShadow:"0 2px 8px rgba(0,0,0,.06)",opacity:loading?.7:1}}>
           <svg width="18" height="18" viewBox="0 0 48 48">
             <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -265,20 +265,20 @@ function AuthScreen() {
             <div style={{position:"relative",marginBottom:12}}>
               <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",fontSize:16}}>👤</span>
               <input className="fi" value={name} onChange={e=>setName(e.target.value)} placeholder="Your name" type="text"
-                style={{width:"100%",padding:"11px 12px 11px 40px",borderRadius:13,border:"2px solid #f0f0f0",background:"#fff8f0",fontSize:14,color:"#444"}}/>
+                style={{width:"100%",padding:"11px 12px 11px 40px",borderRadius:13,border:"2px solid #f0f0f0",background:"#fff8f0",fontSize:16,color:"#444"}}/>
             </div>
           )}
           <div style={{position:"relative",marginBottom:12}}>
             <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",fontSize:16}}>📧</span>
             <input className="fi" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email address" type="email"
-              style={{width:"100%",padding:"11px 12px 11px 40px",borderRadius:13,border:"2px solid #f0f0f0",background:"#fff8f0",fontSize:14,color:"#444"}}/>
+              style={{width:"100%",padding:"11px 12px 11px 40px",borderRadius:13,border:"2px solid #f0f0f0",background:"#fff8f0",fontSize:16,color:"#444"}}/>
           </div>
           <div style={{position:"relative",marginBottom:14}}>
             <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",fontSize:16}}>🔒</span>
             <input className="fi" value={pass} onChange={e=>setPass(e.target.value)} placeholder="Password" type={showPass?"text":"password"}
-              style={{width:"100%",padding:"11px 40px 11px 40px",borderRadius:13,border:"2px solid #f0f0f0",background:"#fff8f0",fontSize:14,color:"#444"}}/>
+              style={{width:"100%",padding:"11px 40px 11px 40px",borderRadius:13,border:"2px solid #f0f0f0",background:"#fff8f0",fontSize:16,color:"#444"}}/>
             <button type="button" onClick={()=>setShowPass(!showPass)}
-              style={{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",fontSize:14,color:"#ccc",padding:0}}>
+              style={{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",fontSize:16,color:"#ccc",padding:0}}>
               {showPass?"🙈":"👁️"}
             </button>
           </div>
@@ -537,9 +537,9 @@ function App({ user, onLogout }) {
                       </div>
                       <div style={{display:"flex",gap:5,flexShrink:0}}>
                         <button className="bn" onClick={()=>setTaskModal(task)}
-                          style={{background:"#f5f5f5",border:"none",borderRadius:10,padding:"7px 10px",cursor:"pointer",fontSize:14}}>✏️</button>
+                          style={{background:"#f5f5f5",border:"none",borderRadius:10,padding:"7px 10px",cursor:"pointer",fontSize:16}}>✏️</button>
                         <button className="bn" onClick={()=>deleteTask(task.id)}
-                          style={{background:"#fff0f3",border:"none",borderRadius:10,padding:"7px 10px",cursor:"pointer",fontSize:14}}>🗑️</button>
+                          style={{background:"#fff0f3",border:"none",borderRadius:10,padding:"7px 10px",cursor:"pointer",fontSize:16}}>🗑️</button>
                       </div>
                     </div>
                   );
@@ -572,7 +572,7 @@ function App({ user, onLogout }) {
                           style={{flex:1,background:area.color+"44",border:"none",borderRadius:10,padding:"6px",
                             cursor:"pointer",fontSize:12,fontWeight:800,color:"#666",fontFamily:"inherit"}}>✏️ Edit</button>
                         <button className="bn" onClick={()=>deleteArea(area.id)}
-                          style={{background:"#fff0f3",border:"none",borderRadius:10,padding:"6px 9px",cursor:"pointer",fontSize:14}}>🗑️</button>
+                          style={{background:"#fff0f3",border:"none",borderRadius:10,padding:"6px 9px",cursor:"pointer",fontSize:16}}>🗑️</button>
                       </div>
                     </div>
                   );
@@ -694,7 +694,7 @@ function CalendarView({ tasks, done, areas, members, calView, setCalView, calDat
           </div>
           <div style={{background:"#d4f5d4",borderRadius:10,padding:"3px 10px",fontSize:12,fontWeight:800,color:"#5cb85c"}}>{selDoneN}/{selTasks.length} ✓</div>
         </div>
-        {selTasks.length===0?<div style={{textAlign:"center",padding:"18px",color:"#ccc",fontSize:14}}>🌈 Free day!</div>
+        {selTasks.length===0?<div style={{textAlign:"center",padding:"18px",color:"#ccc",fontSize:16}}>🌈 Free day!</div>
           :<div style={{display:"flex",flexDirection:"column",gap:8}}>
             {selTasks.map((task,i)=>(
               <TaskRow key={task.id} task={task} isDone={!!selDone[task.id]}
@@ -741,14 +741,14 @@ function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose }
       {editName
         ?<div style={{display:"flex",gap:8,marginBottom:14}}>
           <input className="fi" value={houseName} onChange={e=>setHouseName(e.target.value)}
-            style={{flex:1,padding:"9px 12px",borderRadius:12,border:"2px solid #ffd6e7",background:"#fff8f0",fontSize:14,color:"#444"}}/>
+            style={{flex:1,padding:"9px 12px",borderRadius:12,border:"2px solid #ffd6e7",background:"#fff8f0",fontSize:16,color:"#444"}}/>
           <button className="bn" onClick={()=>{onRename(houseName);setEditName(false);}}
             style={{background:"#baffc9",border:"none",borderRadius:12,padding:"9px 14px",fontWeight:800,fontSize:13,color:"#555",fontFamily:"inherit",cursor:"pointer"}}>Save</button>
         </div>
         :<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,
           background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:12,padding:"10px 14px"}}>
           <span style={{fontWeight:700,color:"#444"}}>{household?.name}</span>
-          <button className="bn" onClick={()=>setEditName(true)} style={{background:"none",border:"none",cursor:"pointer",fontSize:14}}>✏️</button>
+          <button className="bn" onClick={()=>setEditName(true)} style={{background:"none",border:"none",cursor:"pointer",fontSize:16}}>✏️</button>
         </div>}
       <Label>👥 Members ({household?.members?.length||1})</Label>
       <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:18}}>
@@ -759,7 +759,7 @@ function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose }
               {initials(m.name)}
             </div>
             <div style={{flex:1}}>
-              <div style={{fontWeight:800,color:"#444",fontSize:14}}>{m.name} {m.id===user.id&&<span style={{fontSize:11,color:"#aaa"}}>(you)</span>}</div>
+              <div style={{fontWeight:800,color:"#444",fontSize:16}}>{m.name} {m.id===user.id&&<span style={{fontSize:11,color:"#aaa"}}>(you)</span>}</div>
               <div style={{fontSize:11,color:"#bbb"}}>{m.email}</div>
             </div>
             <Pill bg={m.role==="owner"?"#fff0ba":"#f5f5f5"}>{m.role==="owner"?"👑 Owner":"👤 Member"}</Pill>
@@ -774,7 +774,7 @@ function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose }
         <div style={{display:"flex",gap:8}}>
           <input className="fi" value={inviteEmail} onChange={e=>setInviteEmail(e.target.value)}
             placeholder="friend@email.com" type="email" onKeyDown={e=>e.key==="Enter"&&doInvite()}
-            style={{flex:1,padding:"9px 12px",borderRadius:12,border:"2px solid #ffd6e7",background:"#fff",fontSize:14,color:"#444",fontFamily:"inherit"}}/>
+            style={{flex:1,padding:"9px 12px",borderRadius:12,border:"2px solid #ffd6e7",background:"#fff",fontSize:16,color:"#444",fontFamily:"inherit"}}/>
           <button className="bn" onClick={doInvite}
             style={{background:"linear-gradient(135deg,#ffb3ba,#c9f0ff)",border:"none",borderRadius:12,
               padding:"9px 14px",fontWeight:900,fontSize:13,color:"#555",fontFamily:"inherit",cursor:"pointer",whiteSpace:"nowrap"}}>
@@ -789,7 +789,7 @@ function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose }
       </div>
       <button className="bn" onClick={onLogout}
         style={{width:"100%",padding:"13px",borderRadius:16,border:"2px solid #ffb3ba",background:"#fff0f3",
-          fontSize:14,fontWeight:900,color:"#e05080",cursor:"pointer",fontFamily:"inherit"}}>
+          fontSize:16,fontWeight:900,color:"#e05080",cursor:"pointer",fontFamily:"inherit"}}>
         🚪 Sign Out
       </button>
     </Sheet>
@@ -878,7 +878,7 @@ function TaskModal({ task, areas, onSave, onClose }) {
       )}
       <Label>Area</Label>
       <select value={areaId} onChange={e=>setAreaId(e.target.value)}
-        style={{width:"100%",background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:13,padding:"10px 12px",fontSize:14,marginBottom:14,color:"#555"}}>
+        style={{width:"100%",background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:13,padding:"10px 12px",fontSize:16,marginBottom:14,color:"#555"}}>
         <option value="">— No area —</option>
         {areas.map(a=><option key={a.id} value={a.id}>{a.emoji} {a.name}</option>)}
       </select>
@@ -922,7 +922,7 @@ function TaskModal({ task, areas, onSave, onClose }) {
       </div>
       <Label>Notes (optional)</Label>
       <textarea value={notes} onChange={e=>setNotes(e.target.value)} rows={2} placeholder="Any details… 📝"
-        style={{width:"100%",background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:13,padding:"10px 12px",fontSize:14,resize:"vertical",marginBottom:16,color:"#555",fontFamily:"inherit"}}/>
+        style={{width:"100%",background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:13,padding:"10px 12px",fontSize:16,resize:"vertical",marginBottom:16,color:"#555",fontFamily:"inherit"}}/>
       <BigBtn onClick={submit}>{task?"Save Changes 💾":"Add Task 🎉"}</BigBtn>
     </Sheet>
   );
@@ -950,7 +950,7 @@ function Sheet({ title, onClose, children }) {
 
 const Pill     =({children,bg})    =><span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 8px",borderRadius:20,background:bg||"#ffd6e7",fontSize:11,fontWeight:800,color:"#555"}}>{children}</span>;
 const Label    =({children})       =><div style={{fontSize:11,fontWeight:900,color:"#ffb3c6",textTransform:"uppercase",letterSpacing:1.2,marginBottom:6,marginTop:2}}>{children}</div>;
-const FInput   =(props)            =><input {...props} style={{width:"100%",background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:13,padding:"10px 12px",fontSize:14,marginBottom:14,color:"#555",...props.style}}/>;
+const FInput   =(props)            =><input {...props} style={{width:"100%",background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:13,padding:"10px 12px",fontSize:16,marginBottom:14,color:"#555",...props.style}}/>;
 const PastelBtn=({children,onClick})=><button className="bn" onClick={onClick} style={{background:"linear-gradient(135deg,#ffb3ba,#c9f0ff)",border:"none",borderRadius:14,padding:"10px 16px",fontSize:13,fontWeight:900,color:"#555",cursor:"pointer",fontFamily:"inherit",boxShadow:"0 4px 14px rgba(255,182,193,.4)"}}>{children}</button>;
 const BigBtn   =({children,onClick})=><button className="bn" onClick={onClick} style={{width:"100%",background:"linear-gradient(135deg,#ffb3ba,#ffd6a5,#c9f0ff)",border:"none",borderRadius:16,padding:"14px",fontSize:16,fontWeight:900,color:"#555",cursor:"pointer",fontFamily:"inherit",boxShadow:"0 6px 22px rgba(255,182,193,.45)"}}>{children}</button>;
 const Empty    =({emoji,text,sub}) =><div style={{textAlign:"center",padding:"50px 20px"}}><div style={{fontSize:52,marginBottom:10}}>{emoji}</div><div style={{fontFamily:"'Fredoka One',cursive",fontSize:20,color:"#ddd",marginBottom:6}}>{text}</div><div style={{fontSize:13,color:"#ccc"}}>{sub}</div></div>;
