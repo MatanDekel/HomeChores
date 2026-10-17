@@ -79,7 +79,11 @@ function isTaskDue(task, date) {
     }
     return diffDays%(every*7)===0;
   }
-  if(unit==="months") { const ym=(target.getFullYear()-created.getFullYear())*12+(target.getMonth()-created.getMonth()); return ym%every===0&&target.getDate()===created.getDate(); }
+  if(unit==="months") {
+    const ym=(target.getFullYear()-created.getFullYear())*12+(target.getMonth()-created.getMonth());
+    const dayToCheck = task.monthDay || created.getDate();
+    return ym%every===0 && target.getDate()===dayToCheck;
+  }
   if(unit==="years")  { const yy=target.getFullYear()-created.getFullYear(); return yy%every===0&&target.getMonth()===created.getMonth()&&target.getDate()===created.getDate(); }
   return false;
 }
@@ -860,10 +864,11 @@ function TaskModal({ task, areas, onSave, onClose }) {
   const [repeatUnit, setRepeatUnit] =useState(task?.repeatUnit||(task?.repeat==="once"?"once":task?.repeat==="daily"?"days":task?.repeat==="monthly"?"months":"weeks"));
   const [repeatEvery,setRepeatEvery]=useState(task?.repeatEvery||1);
   const [weekDays,   setWeekDays]   =useState(task?.weekDays||[new Date().getDay()]);
+  const [monthDay,   setMonthDay]   =useState(task?.monthDay||new Date().getDate());
   const [notes,      setNotes]      =useState(task?.notes||"");
   const [showEM,     setShowEM]     =useState(false);
   const isOnce=repeatUnit==="once";
-  const submit=()=>{if(!title.trim())return;onSave({...(task||{}),title:title.trim(),emoji,areaId,depth,repeatUnit,repeatEvery:Number(repeatEvery),weekDays:repeatUnit==="weeks"?weekDays:null,notes});};
+  const submit=()=>{if(!title.trim())return;onSave({...(task||{}),title:title.trim(),emoji,areaId,depth,repeatUnit,repeatEvery:Number(repeatEvery),weekDays:repeatUnit==="weeks"?weekDays:null,monthDay:repeatUnit==="months"?Number(monthDay):null,notes});};
   return(
     <Sheet title={task?"✏️ Edit Task":"📋 New Task"} onClose={onClose}>
       <div style={{display:"flex",gap:10,alignItems:"flex-start",marginBottom:14}}>
@@ -948,9 +953,28 @@ function TaskModal({ task, areas, onSave, onClose }) {
           </div>
         </div>
       )}
+      {repeatUnit==="months"&&(
+        <div style={{marginBottom:14}}>
+          <div style={{fontSize:11,fontWeight:900,color:"#ffb3c6",textTransform:"uppercase",letterSpacing:1.2,marginBottom:8}}>On which day of the month</div>
+          <div style={{display:"flex",alignItems:"center",gap:10,background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:14,padding:"10px 14px"}}>
+            <span style={{fontSize:13,fontWeight:700,color:"#aaa",flex:1}}>Day</span>
+            <button className="bn" onClick={()=>setMonthDay(d=>Math.max(1,Number(d)-1))}
+              style={{width:32,height:32,borderRadius:10,background:"#ffd6e7",border:"none",fontSize:18,fontWeight:900,color:"#ff6b9d",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
+            <input type="number" min="1" max="31" value={monthDay}
+              onChange={e=>setMonthDay(Math.max(1,Math.min(31,Number(e.target.value)||1)))}
+              style={{width:48,textAlign:"center",background:"#fff",border:"2px solid #ffd6e7",borderRadius:10,padding:"5px",fontSize:18,fontWeight:900,color:"#ff6b9d"}}/>
+            <button className="bn" onClick={()=>setMonthDay(d=>Math.min(31,Number(d)+1))}
+              style={{width:32,height:32,borderRadius:10,background:"#ffd6e7",border:"none",fontSize:18,fontWeight:900,color:"#ff6b9d",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>＋</button>
+            <span style={{fontSize:13,fontWeight:700,color:"#aaa"}}>of the month</span>
+          </div>
+        </div>
+      )}
       <div style={{background:"#f0fff4",border:"2px solid #a8e6cf",borderRadius:12,padding:"8px 14px",marginBottom:14,fontSize:13,fontWeight:700,color:"#5cb85c",textAlign:"center"}}>
-        🔁 {isOnce?"Happens just once":repeatUnit==="weeks"
-          ?`Every ${repeatEvery} week${repeatEvery>1?"s":""} on ${weekDays.map(d=>["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d]).join(", ")}`
+        🔁 {isOnce?"Happens just once"
+          :repeatUnit==="weeks"
+            ?`Every ${repeatEvery} week${repeatEvery>1?"s":""} on ${weekDays.map(d=>["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d]).join(", ")}`
+          :repeatUnit==="months"
+            ?`Every ${repeatEvery} month${repeatEvery>1?"s":""} on the ${monthDay}${["st","nd","rd"][((monthDay%100-11)%10>0&&(monthDay%100-11)%10<3)?(monthDay%100-11)%10-1:Math.min((monthDay%10)-1,2)]||"th"}`
           :`Repeats every ${repeatEvery} ${Number(repeatEvery)===1?(repeatUnit||"weeks").replace(/s$/,""):repeatUnit}`}
       </div>
       <Label>Notes (optional)</Label>
