@@ -81,8 +81,18 @@ function isTaskDue(task, date) {
   }
   if(unit==="months") {
     const ym=(target.getFullYear()-created.getFullYear())*12+(target.getMonth()-created.getMonth());
+    if(ym<0 || ym%every!==0) return false;
+    if(task.monthMode==="weekday" && task.monthWeekDay!=null && task.monthWeekNum) {
+      // e.g. 2nd Saturday: find the Nth occurrence of weekday in target month
+      if(target.getDay()!==task.monthWeekDay) return false;
+      // Count how many times this weekday has occurred in this month up to target date
+      const firstOfMonth=new Date(target.getFullYear(),target.getMonth(),1);
+      const firstOccurrence=((task.monthWeekDay-firstOfMonth.getDay()+7)%7)+1;
+      const occurrence=Math.floor((target.getDate()-firstOccurrence)/7)+1;
+      return occurrence===task.monthWeekNum;
+    }
     const dayToCheck = task.monthDay || created.getDate();
-    return ym%every===0 && target.getDate()===dayToCheck;
+    return target.getDate()===dayToCheck;
   }
   if(unit==="years")  { const yy=target.getFullYear()-created.getFullYear(); return yy%every===0&&target.getMonth()===created.getMonth()&&target.getDate()===created.getDate(); }
   return false;
@@ -900,10 +910,19 @@ function TaskModal({ task, areas, onSave, onClose }) {
   const [repeatEvery,setRepeatEvery]=useState(task?.repeatEvery||1);
   const [weekDays,   setWeekDays]   =useState(task?.weekDays||[new Date().getDay()]);
   const [monthDay,   setMonthDay]   =useState(task?.monthDay||new Date().getDate());
+  const [monthMode,  setMonthMode]  =useState(task?.monthMode||"date"); // "date" | "weekday"
+  const [monthWeekDay,setMonthWeekDay]=useState(task?.monthWeekDay??6); // 0-6, default Sat=6
+  const [monthWeekNum,setMonthWeekNum]=useState(task?.monthWeekNum||1); // 1-4
   const [notes,      setNotes]      =useState(task?.notes||"");
   const [showEM,     setShowEM]     =useState(false);
   const isOnce=repeatUnit==="once";
-  const submit=()=>{if(!title.trim())return;onSave({...(task||{}),title:title.trim(),emoji,areaId,depth,repeatUnit,repeatEvery:Number(repeatEvery),weekDays:repeatUnit==="weeks"?weekDays:null,monthDay:repeatUnit==="months"?Number(monthDay):null,notes});};
+  const submit=()=>{if(!title.trim())return;onSave({...(task||{}),title:title.trim(),emoji,areaId,depth,repeatUnit,repeatEvery:Number(repeatEvery),
+    weekDays:repeatUnit==="weeks"?weekDays:null,
+    monthDay:repeatUnit==="months"&&monthMode==="date"?Number(monthDay):null,
+    monthMode:repeatUnit==="months"?monthMode:null,
+    monthWeekDay:repeatUnit==="months"&&monthMode==="weekday"?monthWeekDay:null,
+    monthWeekNum:repeatUnit==="months"&&monthMode==="weekday"?monthWeekNum:null,
+    notes});};
   return(
     <Sheet title={task?"✏️ Edit Task":"📋 New Task"} onClose={onClose}>
       <div style={{display:"flex",gap:10,alignItems:"flex-start",marginBottom:14}}>
@@ -990,18 +1009,62 @@ function TaskModal({ task, areas, onSave, onClose }) {
       )}
       {repeatUnit==="months"&&(
         <div style={{marginBottom:14}}>
-          <div style={{fontSize:11,fontWeight:900,color:"#ffb3c6",textTransform:"uppercase",letterSpacing:1.2,marginBottom:8}}>On which day of the month</div>
-          <div style={{display:"flex",alignItems:"center",gap:10,background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:14,padding:"10px 14px"}}>
-            <span style={{fontSize:13,fontWeight:700,color:"#aaa",flex:1}}>Day</span>
-            <button className="bn" onClick={()=>setMonthDay(d=>Math.max(1,Number(d)-1))}
-              style={{width:32,height:32,borderRadius:10,background:"#ffd6e7",border:"none",fontSize:18,fontWeight:900,color:"#ff6b9d",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
-            <input type="number" min="1" max="31" value={monthDay}
-              onChange={e=>setMonthDay(Math.max(1,Math.min(31,Number(e.target.value)||1)))}
-              style={{width:48,textAlign:"center",background:"#fff",border:"2px solid #ffd6e7",borderRadius:10,padding:"5px",fontSize:18,fontWeight:900,color:"#ff6b9d"}}/>
-            <button className="bn" onClick={()=>setMonthDay(d=>Math.min(31,Number(d)+1))}
-              style={{width:32,height:32,borderRadius:10,background:"#ffd6e7",border:"none",fontSize:18,fontWeight:900,color:"#ff6b9d",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>＋</button>
-            <span style={{fontSize:13,fontWeight:700,color:"#aaa"}}>of the month</span>
+          <div style={{fontSize:11,fontWeight:900,color:"#ffb3c6",textTransform:"uppercase",letterSpacing:1.2,marginBottom:8}}>Repeat on</div>
+          {/* Mode toggle */}
+          <div style={{display:"flex",gap:6,background:"#f5f5f5",borderRadius:14,padding:4,marginBottom:10}}>
+            {[{val:"date",label:"📅 Specific date"},{ val:"weekday",label:"📆 Day of week"}].map(m=>(
+              <div key={m.val} className="bn" onClick={()=>setMonthMode(m.val)}
+                style={{flex:1,padding:"7px",borderRadius:10,textAlign:"center",fontWeight:800,fontSize:12,
+                  background:monthMode===m.val?"#fff":"transparent",
+                  color:monthMode===m.val?"#ff6b9d":"#bbb",
+                  boxShadow:monthMode===m.val?"0 2px 8px rgba(255,107,157,.18)":"none",cursor:"pointer"}}>
+                {m.label}
+              </div>
+            ))}
           </div>
+          {/* Date mode */}
+          {monthMode==="date"&&(
+            <div style={{display:"flex",alignItems:"center",gap:10,background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:14,padding:"10px 14px"}}>
+              <span style={{fontSize:13,fontWeight:700,color:"#aaa",flex:1}}>Day</span>
+              <button className="bn" onClick={()=>setMonthDay(d=>Math.max(1,Number(d)-1))}
+                style={{width:32,height:32,borderRadius:10,background:"#ffd6e7",border:"none",fontSize:18,fontWeight:900,color:"#ff6b9d",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
+              <input type="number" min="1" max="31" value={monthDay}
+                onChange={e=>setMonthDay(Math.max(1,Math.min(31,Number(e.target.value)||1)))}
+                style={{width:48,textAlign:"center",background:"#fff",border:"2px solid #ffd6e7",borderRadius:10,padding:"5px",fontSize:18,fontWeight:900,color:"#ff6b9d"}}/>
+              <button className="bn" onClick={()=>setMonthDay(d=>Math.min(31,Number(d)+1))}
+                style={{width:32,height:32,borderRadius:10,background:"#ffd6e7",border:"none",fontSize:18,fontWeight:900,color:"#ff6b9d",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>＋</button>
+              <span style={{fontSize:13,fontWeight:700,color:"#aaa"}}>of the month</span>
+            </div>
+          )}
+          {/* Weekday mode */}
+          {monthMode==="weekday"&&(
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {/* Which occurrence */}
+              <div style={{display:"flex",gap:6}}>
+                {[1,2,3,4].map(n=>(
+                  <div key={n} className="bn" onClick={()=>setMonthWeekNum(n)}
+                    style={{flex:1,padding:"8px 4px",borderRadius:12,textAlign:"center",cursor:"pointer",
+                      background:monthWeekNum===n?"linear-gradient(135deg,#ffb3ba,#c9f0ff)":"#f5f5f5",
+                      border:`2px solid ${monthWeekNum===n?"#ff85a1":"transparent"}`,
+                      fontSize:12,fontWeight:900,color:monthWeekNum===n?"#ff6b9d":"#bbb"}}>
+                    {["1st","2nd","3rd","4th"][n-1]}
+                  </div>
+                ))}
+              </div>
+              {/* Which day */}
+              <div style={{display:"flex",gap:5}}>
+                {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map((d,i)=>(
+                  <div key={d} className="bn" onClick={()=>setMonthWeekDay(i)}
+                    style={{flex:1,padding:"8px 2px",borderRadius:12,textAlign:"center",cursor:"pointer",
+                      background:monthWeekDay===i?"linear-gradient(135deg,#ffb3ba,#c9f0ff)":"#f5f5f5",
+                      border:`2px solid ${monthWeekDay===i?"#ff85a1":"transparent"}`,
+                      fontSize:11,fontWeight:900,color:monthWeekDay===i?"#ff6b9d":"#bbb"}}>
+                    {d}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
       <div style={{background:"#f0fff4",border:"2px solid #a8e6cf",borderRadius:12,padding:"8px 14px",marginBottom:14,fontSize:13,fontWeight:700,color:"#5cb85c",textAlign:"center"}}>
@@ -1009,7 +1072,9 @@ function TaskModal({ task, areas, onSave, onClose }) {
           :repeatUnit==="weeks"
             ?`Every ${repeatEvery} week${repeatEvery>1?"s":""} on ${weekDays.map(d=>["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d]).join(", ")}`
           :repeatUnit==="months"
-            ?`Every ${repeatEvery} month${repeatEvery>1?"s":""} on the ${monthDay}${["st","nd","rd"][((monthDay%100-11)%10>0&&(monthDay%100-11)%10<3)?(monthDay%100-11)%10-1:Math.min((monthDay%10)-1,2)]||"th"}`
+            ?(monthMode==="weekday"
+              ?`Every ${repeatEvery} month${repeatEvery>1?"s":""} on the ${["1st","2nd","3rd","4th"][monthWeekNum-1]} ${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][monthWeekDay]}`
+              :`Every ${repeatEvery} month${repeatEvery>1?"s":""} on the ${monthDay}${["st","nd","rd"][((monthDay%100-11)%10>0&&(monthDay%100-11)%10<3)?(monthDay%100-11)%10-1:Math.min((monthDay%10)-1,2)]||"th"}`)
           :`Repeats every ${repeatEvery} ${Number(repeatEvery)===1?(repeatUnit||"weeks").replace(/s$/,""):repeatUnit}`}
       </div>
       <Label>Notes (optional)</Label>
