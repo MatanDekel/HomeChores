@@ -67,7 +67,18 @@ function isTaskDue(task, date) {
   const every=task.repeatEvery||1;
   if(unit==="once")   return dateKey(created)===dateKey(target);
   if(unit==="days")   return Math.round((target-created)/86400000)%every===0;
-  if(unit==="weeks")  return Math.round((target-created)/86400000)%(every*7)===0;
+  if(unit==="weeks") {
+    // If specific weekDays chosen, check if target day is in the list
+    // and that it falls on the right week cycle
+    const diffDays = Math.round((target-created)/86400000);
+    if(task.weekDays&&task.weekDays.length>0) {
+      if(!task.weekDays.includes(target.getDay())) return false;
+      // Find first occurrence of this weekday >= created
+      const dayOffset = ((target.getDay()-created.getDay())+7)%7;
+      return diffDays>=dayOffset && (diffDays-dayOffset)%(every*7)===0;
+    }
+    return diffDays%(every*7)===0;
+  }
   if(unit==="months") { const ym=(target.getFullYear()-created.getFullYear())*12+(target.getMonth()-created.getMonth()); return ym%every===0&&target.getDate()===created.getDate(); }
   if(unit==="years")  { const yy=target.getFullYear()-created.getFullYear(); return yy%every===0&&target.getMonth()===created.getMonth()&&target.getDate()===created.getDate(); }
   return false;
@@ -848,10 +859,11 @@ function TaskModal({ task, areas, onSave, onClose }) {
   const [depth,      setDepth]      =useState(task?.depth||DEPTHS[0].label);
   const [repeatUnit, setRepeatUnit] =useState(task?.repeatUnit||(task?.repeat==="once"?"once":task?.repeat==="daily"?"days":task?.repeat==="monthly"?"months":"weeks"));
   const [repeatEvery,setRepeatEvery]=useState(task?.repeatEvery||1);
+  const [weekDays,   setWeekDays]   =useState(task?.weekDays||[new Date().getDay()]);
   const [notes,      setNotes]      =useState(task?.notes||"");
   const [showEM,     setShowEM]     =useState(false);
   const isOnce=repeatUnit==="once";
-  const submit=()=>{if(!title.trim())return;onSave({...(task||{}),title:title.trim(),emoji,areaId,depth,repeatUnit,repeatEvery:Number(repeatEvery),notes});};
+  const submit=()=>{if(!title.trim())return;onSave({...(task||{}),title:title.trim(),emoji,areaId,depth,repeatUnit,repeatEvery:Number(repeatEvery),weekDays:repeatUnit==="weeks"?weekDays:null,notes});};
   return(
     <Sheet title={task?"✏️ Edit Task":"📋 New Task"} onClose={onClose}>
       <div style={{display:"flex",gap:10,alignItems:"flex-start",marginBottom:14}}>
@@ -917,8 +929,29 @@ function TaskModal({ task, areas, onSave, onClose }) {
           <span style={{fontSize:13,fontWeight:700,color:"#aaa"}}>{Number(repeatEvery)===1?(repeatUnit||"weeks").replace(/s$/,""):repeatUnit}</span>
         </div>
       )}
+      {repeatUnit==="weeks"&&(
+        <div style={{marginBottom:14}}>
+          <div style={{fontSize:11,fontWeight:900,color:"#ffb3c6",textTransform:"uppercase",letterSpacing:1.2,marginBottom:8}}>On which day(s)</div>
+          <div style={{display:"flex",gap:6,justifyContent:"space-between"}}>
+            {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map((d,i)=>{
+              const on=weekDays.includes(i);
+              return(
+                <div key={d} className="bn" onClick={()=>setWeekDays(p=>on&&p.length>1?p.filter(x=>x!==i):[...p,i].sort())}
+                  style={{flex:1,padding:"8px 2px",borderRadius:12,textAlign:"center",cursor:"pointer",
+                    background:on?"linear-gradient(135deg,#ffb3ba,#c9f0ff)":"#f5f5f5",
+                    border:`2px solid ${on?"#ff85a1":"transparent"}`,
+                    fontSize:11,fontWeight:900,color:on?"#ff6b9d":"#bbb"}}>
+                  {d}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
       <div style={{background:"#f0fff4",border:"2px solid #a8e6cf",borderRadius:12,padding:"8px 14px",marginBottom:14,fontSize:13,fontWeight:700,color:"#5cb85c",textAlign:"center"}}>
-        🔁 {isOnce?"Happens just once":`Repeats every ${repeatEvery} ${Number(repeatEvery)===1?(repeatUnit||"weeks").replace(/s$/,""):repeatUnit}`}
+        🔁 {isOnce?"Happens just once":repeatUnit==="weeks"
+          ?`Every ${repeatEvery} week${repeatEvery>1?"s":""} on ${weekDays.map(d=>["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d]).join(", ")}`
+          :`Repeats every ${repeatEvery} ${Number(repeatEvery)===1?(repeatUnit||"weeks").replace(/s$/,""):repeatUnit}`}
       </div>
       <Label>Notes (optional)</Label>
       <textarea value={notes} onChange={e=>setNotes(e.target.value)} rows={2} placeholder="Any details… 📝"
