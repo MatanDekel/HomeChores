@@ -30,6 +30,11 @@ const TASK_TYPES = [
   { val: "daily",  emoji: "☀️", label: "Daily task"   },
   { val: "weekly", emoji: "📋", label: "Weekly task"  },
 ];
+const TIME_OF_DAY = [
+  { val: "anytime", emoji: "🕐", label: "Anytime"  },
+  { val: "morning", emoji: "🌅", label: "Morning"  },
+  { val: "evening", emoji: "🌙", label: "Evening"  },
+];
 const SUGGESTED_AREAS = [
   { name: "Kitchen",          emoji: "🍳", color: "#ffb3ba" },
   { name: "Living Room",      emoji: "🛋️", color: "#ffdfba" },
@@ -525,6 +530,9 @@ function App({ user, onLogout }) {
 
   const todayDone   = done[todayKey()]||{};
   const todayTasks  = tasks.filter(t=>isTaskDue(t,new Date()) && t.taskType!=="weekly");
+  const morningTasks = todayTasks.filter(t=>t.timeOfDay==="morning");
+  const eveningTasks = todayTasks.filter(t=>t.timeOfDay==="evening");
+  const anytimeTasks = todayTasks.filter(t=>!t.timeOfDay||t.timeOfDay==="anytime");
   const doneCount   = todayTasks.filter(t=>todayDone[t.id]).length;
   const thisWeekDone = weeklyDone[weekKey()]||{};
   const weeklyTasks  = tasks.filter(t=>t.taskType==="weekly");
@@ -643,12 +651,68 @@ function App({ user, onLogout }) {
             )}
             {todayTasks.length===0
               ?<Empty emoji="☀️" text="Nothing due today!" sub="Enjoy your free day 🌈"/>
-              :<div style={{display:"flex",flexDirection:"column",gap:10}}>
-                {todayTasks.map((task,i)=>(
-                  <TaskRow key={task.id} task={task} isDone={!!todayDone[task.id]}
-                    area={areas.find(a=>a.id===task.areaId)} delay={i*0.04}
-                    onToggle={()=>toggleDone(task.id)} members={household?.members||[]}/>
-                ))}
+              :<div style={{display:"flex",flexDirection:"column",gap:16}}>
+                {morningTasks.length>0&&(
+                  <div>
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+                      <span style={{fontSize:20}}>🌅</span>
+                      <div style={{fontFamily:T.fontFamily,fontSize:16,fontWeight:900,color:"#e8a020"}}>Morning</div>
+                      <div style={{flex:1,height:1.5,background:"linear-gradient(90deg,#ffe4a0,transparent)",borderRadius:2}}/>
+                      <div style={{fontSize:12,fontWeight:800,color:"#e8a020",background:"#fff4c2",borderRadius:8,padding:"2px 8px"}}>
+                        {morningTasks.filter(t=>todayDone[t.id]).length}/{morningTasks.length}
+                      </div>
+                    </div>
+                    <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                      {morningTasks.map((task,i)=>(
+                        <TaskRow key={task.id} task={task} isDone={!!todayDone[task.id]}
+                          area={areas.find(a=>a.id===task.areaId)} delay={i*0.04}
+                          onToggle={()=>toggleDone(task.id)} members={household?.members||[]}
+                          accent="#ffe4a0"/>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {anytimeTasks.length>0&&(
+                  <div>
+                    {(morningTasks.length>0||eveningTasks.length>0)&&(
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+                        <span style={{fontSize:20}}>🕐</span>
+                        <div style={{fontFamily:T.fontFamily,fontSize:16,fontWeight:900,color:"#888"}}>Anytime</div>
+                        <div style={{flex:1,height:1.5,background:"linear-gradient(90deg,#e0e0e0,transparent)",borderRadius:2}}/>
+                        <div style={{fontSize:12,fontWeight:800,color:"#888",background:"#f5f5f5",borderRadius:8,padding:"2px 8px"}}>
+                          {anytimeTasks.filter(t=>todayDone[t.id]).length}/{anytimeTasks.length}
+                        </div>
+                      </div>
+                    )}
+                    <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                      {anytimeTasks.map((task,i)=>(
+                        <TaskRow key={task.id} task={task} isDone={!!todayDone[task.id]}
+                          area={areas.find(a=>a.id===task.areaId)} delay={i*0.04}
+                          onToggle={()=>toggleDone(task.id)} members={household?.members||[]}/>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {eveningTasks.length>0&&(
+                  <div>
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+                      <span style={{fontSize:20}}>🌙</span>
+                      <div style={{fontFamily:T.fontFamily,fontSize:16,fontWeight:900,color:"#7060b8"}}>Evening</div>
+                      <div style={{flex:1,height:1.5,background:"linear-gradient(90deg,#c5cff5,transparent)",borderRadius:2}}/>
+                      <div style={{fontSize:12,fontWeight:800,color:"#7060b8",background:"#e8e4f8",borderRadius:8,padding:"2px 8px"}}>
+                        {eveningTasks.filter(t=>todayDone[t.id]).length}/{eveningTasks.length}
+                      </div>
+                    </div>
+                    <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                      {eveningTasks.map((task,i)=>(
+                        <TaskRow key={task.id} task={task} isDone={!!todayDone[task.id]}
+                          area={areas.find(a=>a.id===task.areaId)} delay={i*0.04}
+                          onToggle={()=>toggleDone(task.id)} members={household?.members||[]}
+                          accent="#c5cff5"/>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>}
 
             {/* ── WEEKLY TASKS ── */}
@@ -1099,10 +1163,11 @@ function TaskModal({ task, areas, onSave, onClose }) {
   const [monthWeekDay,setMonthWeekDay]=useState(task?.monthWeekDay??6); // 0-6, default Sat=6
   const [monthWeekNum,setMonthWeekNum]=useState(task?.monthWeekNum||1); // 1-4
   const [taskType,   setTaskType]   =useState(task?.taskType||"daily");
+  const [timeOfDay,  setTimeOfDay]  =useState(task?.timeOfDay||"anytime");
   const [notes,      setNotes]      =useState(task?.notes||"");
   const [showEM,     setShowEM]     =useState(false);
   const isOnce=repeatUnit==="once";
-  const submit=()=>{if(!title.trim())return;onSave({...(task||{}),title:title.trim(),emoji,areaId,depth,taskType,repeatUnit,repeatEvery:Number(repeatEvery),
+  const submit=()=>{if(!title.trim())return;onSave({...(task||{}),title:title.trim(),emoji,areaId,depth,taskType,timeOfDay,repeatUnit,repeatEvery:Number(repeatEvery),
     weekDays:repeatUnit==="weeks"?weekDays:null,
     monthDay:repeatUnit==="months"&&monthMode==="date"?Number(monthDay):null,
     monthMode:repeatUnit==="months"?monthMode:null,
@@ -1142,6 +1207,27 @@ function TaskModal({ task, areas, onSave, onClose }) {
               border:`2px solid ${taskType===t.val?(t.val==="weekly"?"#5bbfdf":"#ffcc44"):"transparent"}`,
               fontWeight:taskType===t.val?900:600,fontSize:14,color:"#555"}}>
             {t.emoji} {t.label}
+          </div>
+        ))}
+      </div>
+      <Label>Time of Day</Label>
+      <div style={{display:"flex",gap:8,marginBottom:14}}>
+        {TIME_OF_DAY.map(t=>(
+          <div key={t.val} className="bn" onClick={()=>setTimeOfDay(t.val)}
+            style={{flex:1,padding:"9px 6px",borderRadius:13,cursor:"pointer",textAlign:"center",
+              background:timeOfDay===t.val
+                ?(t.val==="morning"?"linear-gradient(135deg,#fff4c2,#ffe4a0)"
+                 :t.val==="evening"?"linear-gradient(135deg,#c5cff5,#b8b0e8)"
+                 :"#f5f5f5")
+                :"#f5f5f5",
+              border:`2px solid ${timeOfDay===t.val
+                ?(t.val==="morning"?"#f5c842"
+                 :t.val==="evening"?"#8b7ec8"
+                 :"#ddd")
+                :"transparent"}`,
+              fontWeight:timeOfDay===t.val?900:600,fontSize:13,color:"#555"}}>
+            <div style={{fontSize:18,marginBottom:2}}>{t.emoji}</div>
+            {t.label}
           </div>
         ))}
       </div>
