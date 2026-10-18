@@ -1162,6 +1162,7 @@ function TaskModal({ task, areas, onSave, onClose }) {
           </div>
         ))}
       </div>
+      {taskType==="daily"&&<>
       <Label>Repeat</Label>
       <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10}}>
         {UNITS.map(u=>(
@@ -1275,6 +1276,7 @@ function TaskModal({ task, areas, onSave, onClose }) {
               :`Every ${repeatEvery} month${repeatEvery>1?"s":""} on the ${monthDay}${["st","nd","rd"][((monthDay%100-11)%10>0&&(monthDay%100-11)%10<3)?(monthDay%100-11)%10-1:Math.min((monthDay%10)-1,2)]||"th"}`)
           :`Repeats every ${repeatEvery} ${Number(repeatEvery)===1?(repeatUnit||"weeks").replace(/s$/,""):repeatUnit}`}
       </div>
+      </>}
       <Label>Notes (optional)</Label>
       <textarea value={notes} onChange={e=>setNotes(e.target.value)} rows={2} placeholder="Any details… 📝"
         style={{width:"100%",background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:13,padding:"10px 12px",fontSize:16,resize:"vertical",marginBottom:16,color:"#555",fontFamily:"inherit"}}/>
