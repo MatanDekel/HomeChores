@@ -44,6 +44,101 @@ const SUGGESTED_AREAS = [
   { name: "Laundry Room",     emoji: "🧺", color: "#d4b896" },
 ];
 const PALETTE      = ["#ffb3ba","#ffdfba","#ffffba","#baffc9","#bae1ff","#e8baff","#ffd6e7","#c9f0ff","#d4f5d4","#fff0ba","#ffc8dd","#a2d2ff","#d4b896","#c9c9c9","#b5d5b5","#8fbc8f","#c4a882","#b0b0b0","#e8d5c4","#a8c5a0"];
+const THEMES = {
+  fun: {
+    name: "Fun & Colorful",
+    emoji: "🌈",
+    // Header gradient
+    headerBg: "linear-gradient(135deg,#ffd6e7 0%,#fff0ba 50%,#c9f0ff 100%)",
+    // Page background
+    pageBg: "radial-gradient(ellipse at 0% 0%,#ffe8f0 0%,#fff8e7 40%,#e8f4ff 100%)",
+    // Auth background
+    authBg: "radial-gradient(ellipse at 30% 0%,#ffe8f0,#fff8e7 50%,#e8f4ff)",
+    // Primary accent
+    primary: "#ff6b9d",
+    primaryLight: "#ff85a1",
+    primaryPale: "#ffd6e7",
+    // Secondary
+    secondary: "#5bbfdf",
+    secondaryPale: "#c9f0ff",
+    // Card backgrounds
+    cardBg: "#fff",
+    cardBorder: "#ffd6e7",
+    cardShadow: "rgba(255,182,193,.22)",
+    // Text
+    textMain: "#444",
+    textSub: "#bbb",
+    textMuted: "#ccc",
+    // Input
+    inputBg: "#fff8f0",
+    inputBorder: "#ffd6e7",
+    // Progress bar
+    progressBg: "linear-gradient(90deg,#ffb3ba,#bae1ff,#baffc9)",
+    weekProgressBg: "linear-gradient(90deg,#bae1ff,#baffc9)",
+    // Pill
+    pillDefault: "#ffd6e7",
+    // Tabs
+    tabActiveBg: "#fff",
+    tabActiveColor: "#ff6b9d",
+    tabInactiveColor: "#c06080",
+    // Btn
+    btnGradient: "linear-gradient(135deg,#ffb3ba,#c9f0ff)",
+    btnBigGradient: "linear-gradient(135deg,#ffb3ba,#ffd6a5,#c9f0ff)",
+    // Sheet handle
+    sheetHandle: "#ffd6e7",
+    // Celebration
+    celebBg: "linear-gradient(135deg,#d4f5d4,#c9f0ff)",
+    celebBorder: "#a8e6cf",
+    celebColor: "#5cb85c",
+    weekCelebBg: "linear-gradient(135deg,#c9f0ff,#d4f5d4)",
+    weekCelebBorder: "#bae1ff",
+    weekCelebColor: "#5bbfdf",
+    // Font
+    fontFamily: "'Fredoka One',cursive",
+  },
+  mature: {
+    name: "Calm & Natural",
+    emoji: "🌿",
+    headerBg: "linear-gradient(135deg,#c8b89a 0%,#d4c4a8 50%,#b8c4a8 100%)",
+    pageBg: "radial-gradient(ellipse at 0% 0%,#f2ebe0 0%,#ede8dc 40%,#e8ede0 100%)",
+    authBg: "radial-gradient(ellipse at 30% 0%,#f2ebe0,#ede8dc 50%,#e8ede0)",
+    primary: "#8b6f47",
+    primaryLight: "#a08060",
+    primaryPale: "#e8ddd0",
+    secondary: "#7a8c6e",
+    secondaryPale: "#d4ddc8",
+    cardBg: "#faf8f4",
+    cardBorder: "#ddd5c4",
+    cardShadow: "rgba(139,111,71,.12)",
+    textMain: "#3d3028",
+    textSub: "#9a8878",
+    textMuted: "#b5a898",
+    inputBg: "#f5f0e8",
+    inputBorder: "#ddd5c4",
+    progressBg: "linear-gradient(90deg,#c8b89a,#b8c4a8,#d4c4a8)",
+    weekProgressBg: "linear-gradient(90deg,#b8c4a8,#c8d4b8)",
+    pillDefault: "#e8ddd0",
+    tabActiveBg: "#faf8f4",
+    tabActiveColor: "#8b6f47",
+    tabInactiveColor: "#a09080",
+    btnGradient: "linear-gradient(135deg,#c8b89a,#b8c4a8)",
+    btnBigGradient: "linear-gradient(135deg,#c8b89a,#d4c0a0,#b8c4a8)",
+    sheetHandle: "#ddd5c4",
+    celebBg: "linear-gradient(135deg,#d4ddc8,#e8ddd0)",
+    celebBorder: "#b8c4a8",
+    celebColor: "#7a8c6e",
+    weekCelebBg: "linear-gradient(135deg,#d4ddc8,#c8d4b8)",
+    weekCelebBorder: "#b8c4a8",
+    weekCelebColor: "#7a8c6e",
+    fontFamily: "'Nunito',sans-serif",
+  }
+};
+
+// Theme context — read from localStorage for instant load
+function getTheme(user) {
+  const saved = user?.theme || localStorage.getItem("hc:theme") || "fun";
+  return THEMES[saved] || THEMES.fun;
+}
 const DAY_SHORT    = ["S","M","T","W","T","F","S"];
 const DAY_EMOJI    = ["🌟","🌸","🌻","🌈","🎉","🎊","🌙"];
 const MONTH_NAMES  = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -266,7 +361,7 @@ function AuthScreen() {
       `}</style>
       <div className="fu" style={{textAlign:"center",marginBottom:28}}>
         <div style={{fontSize:54,marginBottom:6}}>🏡</div>
-        <div style={{fontFamily:"'Fredoka One',cursive",fontSize:26,color:"#ff6b9d"}}>Happy Home</div>
+        <div style={{fontFamily:T.fontFamily,fontSize:26,color:T.primary}}>Happy Home</div>
         <div style={{fontSize:11,color:"#ffb3c6",fontWeight:800,letterSpacing:2,textTransform:"uppercase",marginTop:2}}>Chore Tracker ✨</div>
       </div>
       <div className="fu" style={{background:"#fff",borderRadius:28,padding:"28px 24px",width:"100%",maxWidth:400,
@@ -359,6 +454,14 @@ function App({ user, onLogout }) {
   const [showAccount, setShowAccount] = useState(false);
   const [filterArea,  setFilterArea]  = useState(null);
   const [weeklyDone,  setWeeklyDone]  = useState({});
+  const [themeKey,    setThemeKey]    = useState(() => user?.theme || localStorage.getItem("hc:theme") || "fun");
+  const T = THEMES[themeKey] || THEMES.fun;
+
+  const changeTheme = async (key) => {
+    setThemeKey(key);
+    localStorage.setItem("hc:theme", key);
+    await updateDoc(doc(db, "users", user.id), { theme: key });
+  };
 
   // ── Real-time Firestore listeners ──
   useEffect(() => {
@@ -435,7 +538,7 @@ function App({ user, onLogout }) {
   ];
 
   return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 0% 0%,#ffe8f0 0%,#fff8e7 40%,#e8f4ff 100%)",
+    <div style={{minHeight:"100vh",background:T.pageBg,
       fontFamily:"'Nunito','Segoe UI',sans-serif"}}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap');
@@ -455,13 +558,13 @@ function App({ user, onLogout }) {
       `}</style>
 
       {/* HEADER */}
-      <div style={{background:"linear-gradient(135deg,#ffd6e7 0%,#fff0ba 50%,#c9f0ff 100%)",padding:"20px 18px 0",boxShadow:"0 4px 24px rgba(255,182,193,.25)"}}>
+      <div style={{background:T.headerBg,padding:"20px 18px 0",boxShadow:`0 4px 24px ${T.cardShadow}`}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
             <span style={{fontSize:28}}>🏡</span>
             <div>
-              <div style={{fontFamily:"'Fredoka One',cursive",fontSize:20,color:"#ff6b9d",lineHeight:1}}>{household?.name||"Happy Home"}</div>
-              <div style={{fontSize:10,color:"#ffb3c6",fontWeight:800,letterSpacing:2,textTransform:"uppercase"}}>
+              <div style={{fontFamily:T.fontFamily,fontSize:20,color:T.primary,lineHeight:1}}>{household?.name||"Happy Home"}</div>
+              <div style={{fontSize:10,color:T.primaryLight,fontWeight:800,letterSpacing:2,textTransform:"uppercase"}}>
                 {household?.members?.length||1} member{(household?.members?.length||1)!==1?"s":""} ✨
               </div>
             </div>
@@ -469,13 +572,13 @@ function App({ user, onLogout }) {
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             {tab==="today"&&(
               <div style={{background:"rgba(255,255,255,.55)",borderRadius:14,padding:"5px 12px",textAlign:"center"}}>
-                <div style={{fontFamily:"'Fredoka One',cursive",fontSize:20,color:doneCount===todayTasks.length&&todayTasks.length>0?"#5cb85c":"#ff6b9d",lineHeight:1}}>{doneCount}/{todayTasks.length}</div>
-                <div style={{fontSize:9,color:"#ffb3c6",fontWeight:800,letterSpacing:1}}>DONE</div>
+                <div style={{fontFamily:T.fontFamily,fontSize:20,color:doneCount===todayTasks.length&&todayTasks.length>0?"#5cb85c":T.primary,lineHeight:1}}>{doneCount}/{todayTasks.length}</div>
+                <div style={{fontSize:9,color:T.primaryLight,fontWeight:800,letterSpacing:1}}>DONE</div>
               </div>
             )}
             <div className="bn" onClick={()=>setShowAccount(true)}
               style={{width:38,height:38,borderRadius:12,background:"#fff",border:"2px solid #ffd6e7",
-                display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 8px rgba(255,182,193,.3)"}}>
+                display:"flex",alignItems:"center",justifyContent:"center",boxShadow:`0 2px 8px ${T.cardShadow}`}}>
               {user.authMethod==="google"&&user.avatar?.startsWith("http")
                 ? <img src={user.avatar} style={{width:28,height:28,borderRadius:8}} alt=""/>
                 : <span style={{fontSize:user.authMethod==="google"?20:13,fontWeight:900,color:"#ff6b9d"}}>
@@ -499,9 +602,9 @@ function App({ user, onLogout }) {
           {TABS.map(t=>(
             <button key={t.id} className="bn" onClick={()=>setTab(t.id)}
               style={{flex:1,padding:"8px 4px",border:"none",borderRadius:"14px 14px 0 0",
-                background:tab===t.id?"#fff":"rgba(255,255,255,.35)",color:tab===t.id?"#ff6b9d":"#c06080",
+                background:tab===t.id?T.tabActiveBg:"rgba(255,255,255,.35)",color:tab===t.id?T.tabActiveColor:T.tabInactiveColor,
                 fontWeight:800,fontSize:11,fontFamily:"inherit",cursor:"pointer",
-                boxShadow:tab===t.id?"0 -2px 12px rgba(255,107,157,.15)":"none",letterSpacing:.5}}>
+                boxShadow:tab===t.id?`0 -2px 12px ${T.cardShadow}`:"none",letterSpacing:.5}}>
               <div style={{fontSize:16,marginBottom:1}}>{t.emoji}</div>{t.label}
             </button>
           ))}
@@ -514,7 +617,7 @@ function App({ user, onLogout }) {
         {tab==="today"&&(
           <div className="fu">
             <div style={{background:"#fff",borderRadius:24,padding:"18px 20px",marginBottom:16,
-              boxShadow:"0 6px 28px rgba(255,182,193,.22)",border:"2px solid #ffd6e7",textAlign:"center"}}>
+              boxShadow:`0 6px 28px ${T.cardShadow}`,border:`2px solid ${T.cardBorder}`,textAlign:"center"}}>
               <div style={{fontSize:40,marginBottom:4}}>{DAY_EMOJI[new Date().getDay()]}</div>
               <div style={{fontFamily:"'Fredoka One',cursive",fontSize:26,color:"#ff6b9d"}}>
                 {new Date().toLocaleDateString("en-US",{weekday:"long"})}
@@ -525,16 +628,16 @@ function App({ user, onLogout }) {
               {todayTasks.length>0&&(<>
                 <div style={{height:10,background:"#f5f5f5",borderRadius:20,overflow:"hidden"}}>
                   <div style={{height:"100%",borderRadius:20,transition:"width .55s cubic-bezier(.34,1.2,.64,1)",
-                    background:"linear-gradient(90deg,#ffb3ba,#bae1ff,#baffc9)",width:`${(doneCount/todayTasks.length)*100}%`}}/>
+                    background:T.progressBg,width:`${(doneCount/todayTasks.length)*100}%`}}/>
                 </div>
                 <div style={{fontSize:12,color:"#bbb",marginTop:5,fontWeight:700}}>{doneCount} of {todayTasks.length} done</div>
               </>)}
             </div>
             {doneCount===todayTasks.length&&todayTasks.length>0&&(
-              <div className="pu" style={{textAlign:"center",background:"linear-gradient(135deg,#d4f5d4,#c9f0ff)",
-                borderRadius:20,padding:"18px",marginBottom:16,border:"2px solid #a8e6cf"}}>
+              <div className="pu" style={{textAlign:"center",background:T.celebBg,
+                borderRadius:20,padding:"18px",marginBottom:16,border:`2px solid ${T.celebBorder}`}}>
                 <div style={{fontSize:48}}>🎉</div>
-                <div style={{fontFamily:"'Fredoka One',cursive",fontSize:22,color:"#5cb85c"}}>All done! You rock!</div>
+                <div style={{fontFamily:T.fontFamily,fontSize:22,color:T.celebColor}}>All done! You rock!</div>
                 <div style={{fontSize:13,color:"#7dc87d",marginTop:3}}>Cleaning superstar ⭐</div>
               </div>
             )}
@@ -556,25 +659,25 @@ function App({ user, onLogout }) {
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
                     <span style={{fontSize:20}}>📋</span>
                     <div>
-                      <div style={{fontFamily:"'Fredoka One',cursive",fontSize:18,color:"#5bbfdf",lineHeight:1}}>This Week</div>
+                      <div style={{fontFamily:T.fontFamily,fontSize:18,color:T.secondary,lineHeight:1}}>This Week</div>
                       <div style={{fontSize:11,color:"#aad4e8",fontWeight:700}}>Resets every Sunday</div>
                     </div>
                   </div>
-                  <div style={{background:"#e8f4ff",borderRadius:10,padding:"4px 12px",fontSize:12,fontWeight:800,color:"#5bbfdf"}}>
+                  <div style={{background:T.secondaryPale,borderRadius:10,padding:"4px 12px",fontSize:12,fontWeight:800,color:T.secondary}}>
                     {weeklyDoneCount}/{weeklyTasks.length} ✓
                   </div>
                 </div>
                 {/* Weekly progress */}
                 <div style={{height:8,background:"#f5f5f5",borderRadius:20,overflow:"hidden",marginBottom:12}}>
                   <div style={{height:"100%",borderRadius:20,transition:"width .5s cubic-bezier(.34,1.2,.64,1)",
-                    background:"linear-gradient(90deg,#bae1ff,#baffc9)",
+                    background:T.weekProgressBg,
                     width:`${weeklyTasks.length>0?(weeklyDoneCount/weeklyTasks.length)*100:0}%`}}/>
                 </div>
                 {weeklyDoneCount===weeklyTasks.length&&weeklyTasks.length>0&&(
-                  <div className="pu" style={{textAlign:"center",background:"linear-gradient(135deg,#c9f0ff,#d4f5d4)",
-                    borderRadius:16,padding:"14px",marginBottom:12,border:"2px solid #bae1ff"}}>
+                  <div className="pu" style={{textAlign:"center",background:T.weekCelebBg,
+                    borderRadius:16,padding:"14px",marginBottom:12,border:`2px solid ${T.weekCelebBorder}`}}>
                     <div style={{fontSize:36}}>🌟</div>
-                    <div style={{fontFamily:"'Fredoka One',cursive",fontSize:18,color:"#5bbfdf"}}>Week complete!</div>
+                    <div style={{fontFamily:T.fontFamily,fontSize:18,color:T.weekCelebColor}}>Week complete!</div>
                   </div>
                 )}
                 <div style={{display:"flex",flexDirection:"column",gap:10}}>
@@ -601,8 +704,8 @@ function App({ user, onLogout }) {
         {tab==="tasks"&&(
           <div className="fu">
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-              <div style={{fontFamily:"'Fredoka One',cursive",fontSize:22,color:"#ff6b9d"}}>📋 All Tasks</div>
-              <PastelBtn onClick={()=>setTaskModal({})}>＋ New Task</PastelBtn>
+              <div style={{fontFamily:T.fontFamily,fontSize:22,color:T.primary}}>📋 All Tasks</div>
+              <PastelBtn onClick={()=>setTaskModal({})} T={T}>＋ New Task</PastelBtn>
             </div>
             {/* Area filter chips */}
             <div style={{display:"flex",gap:6,overflowX:"auto",marginBottom:16,paddingBottom:4}}>
@@ -673,8 +776,8 @@ function App({ user, onLogout }) {
         {tab==="areas"&&(
           <div className="fu">
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
-              <div style={{fontFamily:"'Fredoka One',cursive",fontSize:22,color:"#ff6b9d"}}>🗂️ Areas</div>
-              <PastelBtn onClick={()=>setAreaModal({})}>＋ New Area</PastelBtn>
+              <div style={{fontFamily:T.fontFamily,fontSize:22,color:T.primary}}>🗂️ Areas</div>
+              <PastelBtn onClick={()=>setAreaModal({})} T={T}>＋ New Area</PastelBtn>
             </div>
             {areas.length===0?<Empty emoji="🏡" text="No areas yet!" sub="Create Kitchen, Bathroom, Living Room…"/>
               :<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
@@ -707,7 +810,8 @@ function App({ user, onLogout }) {
       {taskModal!==null&&<TaskModal task={taskModal.id?taskModal:null} areas={areas} onSave={saveTask} onClose={()=>setTaskModal(null)}/>}
       {showAccount&&(
         <AccountSheet user={user} household={household} onInvite={sendInvite}
-          onRename={renameHousehold} onLogout={onLogout} onClose={()=>setShowAccount(false)}/>
+          onRename={renameHousehold} onLogout={onLogout} onClose={()=>setShowAccount(false)}
+          themeKey={themeKey} onThemeChange={changeTheme} T={T}/>
       )}
     </div>
   );
@@ -830,7 +934,7 @@ function CalendarView({ tasks, done, areas, members, calView, setCalView, calDat
 }
 
 // ── Account Sheet ──────────────────────────────────────────────────────────────
-function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose }) {
+function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose, themeKey, onThemeChange, T=THEMES.fun }) {
   const [inviteEmail,setInviteEmail]=useState("");
   const [inviteMsg,  setInviteMsg]  =useState("");
   const [inviteOk,   setInviteOk]   =useState(false);
@@ -909,8 +1013,27 @@ function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose }
             border:`1.5px solid ${inviteOk?"#a8e6cf":"#ffb3ba"}`}}>{inviteMsg}</div>
         )}
       </div>
+      <Label T={T}>🎨 App Theme</Label>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:20}}>
+        {Object.entries(THEMES).map(([key,theme])=>(
+          <div key={key} className="bn" onClick={()=>onThemeChange(key)}
+            style={{padding:"14px 10px",borderRadius:16,textAlign:"center",cursor:"pointer",
+              background:themeKey===key?theme.headerBg:"#f5f5f5",
+              border:`2.5px solid ${themeKey===key?theme.primary:"#e0e0e0"}`,
+              boxShadow:themeKey===key?`0 4px 14px ${theme.cardShadow}`:"none"}}>
+            <div style={{fontSize:28,marginBottom:4}}>{theme.emoji}</div>
+            <div style={{fontFamily:theme.fontFamily,fontSize:13,fontWeight:900,color:theme.primary}}>{theme.name}</div>
+            <div style={{display:"flex",gap:4,justifyContent:"center",marginTop:6}}>
+              {[theme.primary,theme.secondary,theme.primaryPale,theme.secondaryPale].map((c,i)=>(
+                <div key={i} style={{width:14,height:14,borderRadius:"50%",background:c}}/>
+              ))}
+            </div>
+            {themeKey===key&&<div style={{fontSize:11,fontWeight:800,color:theme.primary,marginTop:4}}>✓ Active</div>}
+          </div>
+        ))}
+      </div>
       <button className="bn" onClick={onLogout}
-        style={{width:"100%",padding:"13px",borderRadius:16,border:"2px solid #ffb3ba",background:"#fff0f3",
+        style={{width:"100%",padding:"13px",borderRadius:16,border:`2px solid ${T.primaryPale}`,background:T.inputBg,
           fontSize:16,fontWeight:900,color:"#e05080",cursor:"pointer",fontFamily:"inherit"}}>
         🚪 Sign Out
       </button>
@@ -1181,8 +1304,8 @@ function Sheet({ title, onClose, children }) {
 }
 
 const Pill     =({children,bg})    =><span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 8px",borderRadius:20,background:bg||"#ffd6e7",fontSize:11,fontWeight:800,color:"#555"}}>{children}</span>;
-const Label    =({children})       =><div style={{fontSize:11,fontWeight:900,color:"#ffb3c6",textTransform:"uppercase",letterSpacing:1.2,marginBottom:6,marginTop:2}}>{children}</div>;
+const Label    =({children,T=THEMES.fun})=><div style={{fontSize:11,fontWeight:900,color:T.primaryLight,textTransform:"uppercase",letterSpacing:1.2,marginBottom:6,marginTop:2}}>{children}</div>;
 const FInput   =(props)            =><input {...props} style={{width:"100%",background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:13,padding:"10px 12px",fontSize:16,marginBottom:14,color:"#555",...props.style}}/>;
-const PastelBtn=({children,onClick})=><button className="bn" onClick={onClick} style={{background:"linear-gradient(135deg,#ffb3ba,#c9f0ff)",border:"none",borderRadius:14,padding:"10px 16px",fontSize:13,fontWeight:900,color:"#555",cursor:"pointer",fontFamily:"inherit",boxShadow:"0 4px 14px rgba(255,182,193,.4)"}}>{children}</button>;
-const BigBtn   =({children,onClick})=><button className="bn" onClick={onClick} style={{width:"100%",background:"linear-gradient(135deg,#ffb3ba,#ffd6a5,#c9f0ff)",border:"none",borderRadius:16,padding:"14px",fontSize:16,fontWeight:900,color:"#555",cursor:"pointer",fontFamily:"inherit",boxShadow:"0 6px 22px rgba(255,182,193,.45)"}}>{children}</button>;
+const PastelBtn=({children,onClick,T=THEMES.fun})=><button className="bn" onClick={onClick} style={{background:T.btnGradient,border:"none",borderRadius:14,padding:"10px 16px",fontSize:13,fontWeight:900,color:T.textMain,cursor:"pointer",fontFamily:"inherit",boxShadow:`0 4px 14px ${T.cardShadow}`}}>{children}</button>;
+const BigBtn   =({children,onClick,T=THEMES.fun})=><button className="bn" onClick={onClick} style={{width:"100%",background:T.btnBigGradient,border:"none",borderRadius:16,padding:"14px",fontSize:16,fontWeight:900,color:T.textMain,cursor:"pointer",fontFamily:"inherit",boxShadow:`0 6px 22px ${T.cardShadow}`}}>{children}</button>;
 const Empty    =({emoji,text,sub}) =><div style={{textAlign:"center",padding:"50px 20px"}}><div style={{fontSize:52,marginBottom:10}}>{emoji}</div><div style={{fontFamily:"'Fredoka One',cursive",fontSize:20,color:"#ddd",marginBottom:6}}>{text}</div><div style={{fontSize:13,color:"#ccc"}}>{sub}</div></div>;
