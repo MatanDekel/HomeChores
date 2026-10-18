@@ -476,7 +476,8 @@ function App({ user, onLogout }) {
     const u2 = onSnapshot(collection(db, "households", hid, "areas"),  snap => setAreas(snap.docs.map(d=>({id:d.id,...d.data()}))));
     const u3 = onSnapshot(collection(db, "households", hid, "tasks"),  snap => setTasks(snap.docs.map(d=>({id:d.id,...d.data()}))));
     const u4 = onSnapshot(doc(db, "households", hid, "done", "state"), snap => { if(snap.exists()) setDone(snap.data()); });
-    return () => { u1(); u2(); u3(); u4(); };
+      const u5 = onSnapshot(doc(db, "households", hid, "done", "weekly"), snap => { if(snap.exists()) setWeeklyDone(snap.data()); else setWeeklyDone({}); });
+    return () => { u1(); u2(); u3(); u4(); u5(); };
   }, [hid]);
 
   // ── Write helpers ──
