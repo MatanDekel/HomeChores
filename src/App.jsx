@@ -26,6 +26,10 @@ const UNITS = [
 ];
 const TASK_EMOJIS  = ["🧹","🧺","🪣","🫧","🚿","🛁","🪥","🧽","🫙","🗑️","🪴","🛋️","🪟","🚪","🍽️","🥘","🧊","🧻","🛏️","🧸","📦","🪞","💡","🖼️","🏠","🌿","🌊","🧴","🪒","🫗","🧲","🪤"];
 const AREA_EMOJIS  = ["🏠","🛋️","🍳","🛁","🛏️","🪴","🚗","📚","🎮","💼","🌿","🪟","🏡","🧺","🍵","🖥️"];
+const TASK_TYPES = [
+  { val: "daily",  emoji: "☀️", label: "Daily task"   },
+  { val: "weekly", emoji: "📋", label: "Weekly task"  },
+];
 const SUGGESTED_AREAS = [
   { name: "Kitchen",          emoji: "🍳", color: "#ffb3ba" },
   { name: "Living Room",      emoji: "🛋️", color: "#ffdfba" },
@@ -50,6 +54,12 @@ function uid()        { return Math.random().toString(36).slice(2,9); }
 function dateKey(d)   { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 function todayKey()   { return dateKey(new Date()); }
 function sameDay(a,b) { return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+function weekKey(d) {
+  const dt = d || new Date();
+  const sunday = new Date(dt);
+  sunday.setDate(dt.getDate() - dt.getDay());
+  return `week-${dateKey(sunday)}`;
+}
 function initials(name) { return (name||"?").trim().split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2); }
 function validateEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
@@ -348,6 +358,7 @@ function App({ user, onLogout }) {
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [showAccount, setShowAccount] = useState(false);
   const [filterArea,  setFilterArea]  = useState(null);
+  const [weeklyDone,  setWeeklyDone]  = useState({});
 
   // ── Real-time Firestore listeners ──
   useEffect(() => {
@@ -361,6 +372,13 @@ function App({ user, onLogout }) {
   }, [hid]);
 
   // ── Write helpers ──
+  const toggleWeeklyDone = async (taskId) => {
+    const key = weekKey();
+    const weekRef = doc(db, "households", hid, "done", "weekly");
+    const current = weeklyDone[key] || {};
+    const newVal = { ...weeklyDone, [key]: { ...current, [taskId]: !current[taskId] } };
+    await setDoc(weekRef, newVal, { merge: true });
+  };
   const saveArea = async (a) => {
     const ref = a.id
       ? doc(db, "households", hid, "areas", a.id)
@@ -402,9 +420,12 @@ function App({ user, onLogout }) {
     setHousehold(h=>({...h,name}));
   };
 
-  const todayDone  = done[todayKey()]||{};
-  const todayTasks = tasks.filter(t=>isTaskDue(t,new Date()));
-  const doneCount  = todayTasks.filter(t=>todayDone[t.id]).length;
+  const todayDone   = done[todayKey()]||{};
+  const todayTasks  = tasks.filter(t=>isTaskDue(t,new Date()) && t.taskType!=="weekly");
+  const doneCount   = todayTasks.filter(t=>todayDone[t.id]).length;
+  const thisWeekDone = weeklyDone[weekKey()]||{};
+  const weeklyTasks  = tasks.filter(t=>t.taskType==="weekly");
+  const weeklyDoneCount = weeklyTasks.filter(t=>thisWeekDone[t.id]).length;
 
   const TABS = [
     {id:"today",emoji:"☀️",label:"Today"},
@@ -526,6 +547,46 @@ function App({ user, onLogout }) {
                     onToggle={()=>toggleDone(task.id)} members={household?.members||[]}/>
                 ))}
               </div>}
+
+            {/* ── WEEKLY TASKS ── */}
+            {weeklyTasks.length>0&&(
+              <div style={{marginTop:24}}>
+                {/* Weekly header */}
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{fontSize:20}}>📋</span>
+                    <div>
+                      <div style={{fontFamily:"'Fredoka One',cursive",fontSize:18,color:"#5bbfdf",lineHeight:1}}>This Week</div>
+                      <div style={{fontSize:11,color:"#aad4e8",fontWeight:700}}>Resets every Sunday</div>
+                    </div>
+                  </div>
+                  <div style={{background:"#e8f4ff",borderRadius:10,padding:"4px 12px",fontSize:12,fontWeight:800,color:"#5bbfdf"}}>
+                    {weeklyDoneCount}/{weeklyTasks.length} ✓
+                  </div>
+                </div>
+                {/* Weekly progress */}
+                <div style={{height:8,background:"#f5f5f5",borderRadius:20,overflow:"hidden",marginBottom:12}}>
+                  <div style={{height:"100%",borderRadius:20,transition:"width .5s cubic-bezier(.34,1.2,.64,1)",
+                    background:"linear-gradient(90deg,#bae1ff,#baffc9)",
+                    width:`${weeklyTasks.length>0?(weeklyDoneCount/weeklyTasks.length)*100:0}%`}}/>
+                </div>
+                {weeklyDoneCount===weeklyTasks.length&&weeklyTasks.length>0&&(
+                  <div className="pu" style={{textAlign:"center",background:"linear-gradient(135deg,#c9f0ff,#d4f5d4)",
+                    borderRadius:16,padding:"14px",marginBottom:12,border:"2px solid #bae1ff"}}>
+                    <div style={{fontSize:36}}>🌟</div>
+                    <div style={{fontFamily:"'Fredoka One',cursive",fontSize:18,color:"#5bbfdf"}}>Week complete!</div>
+                  </div>
+                )}
+                <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                  {weeklyTasks.map((task,i)=>(
+                    <TaskRow key={task.id} task={task} isDone={!!thisWeekDone[task.id]}
+                      area={areas.find(a=>a.id===task.areaId)} delay={i*0.04}
+                      onToggle={()=>toggleWeeklyDone(task.id)} members={household?.members||[]}
+                      accent="#bae1ff"/>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -653,17 +714,18 @@ function App({ user, onLogout }) {
 }
 
 // ── Task Row ───────────────────────────────────────────────────────────────────
-function TaskRow({ task, isDone, area, delay=0, onToggle, members=[] }) {
+function TaskRow({ task, isDone, area, delay=0, onToggle, members=[], accent=null }) {
   const dep=DEPTHS.find(d=>d.label===task.depth)||DEPTHS[0];
   const creator=members.find(m=>m.id===task.createdBy);
+  const borderColor = isDone?"#e0e0e0": area?.color || accent || "#ffd6e7";
   return(
     <div className="trow fu" style={{animationDelay:`${delay}s`,background:isDone?"#f9f9f9":"#fff",
-      border:`2.5px solid ${isDone?"#e0e0e0":area?.color||"#ffd6e7"}`,
+      border:`2.5px solid ${borderColor}`,
       padding:"12px 14px",display:"flex",alignItems:"center",gap:12,opacity:isDone?.68:1,
-      boxShadow:isDone?"0 2px 6px #eee":`0 4px 16px ${area?.color||"#ffd6e7"}44`}}>
+      boxShadow:isDone?"0 2px 6px #eee":`0 4px 16px ${area?.color||accent||"#ffd6e7"}44`}}>
       <div className="bn" onClick={onToggle}
         style={{width:32,height:32,borderRadius:10,flexShrink:0,
-          border:`2.5px solid ${isDone?"#5cb85c":area?.color||"#ffb3ba"}`,
+          border:`2.5px solid ${isDone?"#5cb85c":area?.color||accent||"#ffb3ba"}`,
           background:isDone?"#5cb85c":"transparent",display:"flex",alignItems:"center",
           justifyContent:"center",fontSize:16,color:"#fff",fontWeight:900,transition:"all .18s"}}>
         {isDone?"✓":""}
@@ -913,10 +975,11 @@ function TaskModal({ task, areas, onSave, onClose }) {
   const [monthMode,  setMonthMode]  =useState(task?.monthMode||"date"); // "date" | "weekday"
   const [monthWeekDay,setMonthWeekDay]=useState(task?.monthWeekDay??6); // 0-6, default Sat=6
   const [monthWeekNum,setMonthWeekNum]=useState(task?.monthWeekNum||1); // 1-4
+  const [taskType,   setTaskType]   =useState(task?.taskType||"daily");
   const [notes,      setNotes]      =useState(task?.notes||"");
   const [showEM,     setShowEM]     =useState(false);
   const isOnce=repeatUnit==="once";
-  const submit=()=>{if(!title.trim())return;onSave({...(task||{}),title:title.trim(),emoji,areaId,depth,repeatUnit,repeatEvery:Number(repeatEvery),
+  const submit=()=>{if(!title.trim())return;onSave({...(task||{}),title:title.trim(),emoji,areaId,depth,taskType,repeatUnit,repeatEvery:Number(repeatEvery),
     weekDays:repeatUnit==="weeks"?weekDays:null,
     monthDay:repeatUnit==="months"&&monthMode==="date"?Number(monthDay):null,
     monthMode:repeatUnit==="months"?monthMode:null,
@@ -947,6 +1010,18 @@ function TaskModal({ task, areas, onSave, onClose }) {
           ))}
         </div>
       )}
+      <Label>Task Type</Label>
+      <div style={{display:"flex",gap:8,marginBottom:14}}>
+        {TASK_TYPES.map(t=>(
+          <div key={t.val} className="bn" onClick={()=>setTaskType(t.val)}
+            style={{flex:1,padding:"9px 10px",borderRadius:13,cursor:"pointer",textAlign:"center",
+              background:taskType===t.val?(t.val==="weekly"?"#c9f0ff":"#fff0ba"):"#f5f5f5",
+              border:`2px solid ${taskType===t.val?(t.val==="weekly"?"#5bbfdf":"#ffcc44"):"transparent"}`,
+              fontWeight:taskType===t.val?900:600,fontSize:14,color:"#555"}}>
+            {t.emoji} {t.label}
+          </div>
+        ))}
+      </div>
       <Label>Area</Label>
       <select value={areaId} onChange={e=>setAreaId(e.target.value)}
         style={{width:"100%",background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:13,padding:"10px 12px",fontSize:16,marginBottom:14,color:"#555"}}>
