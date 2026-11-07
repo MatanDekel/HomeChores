@@ -1,7 +1,7 @@
 // src/firebase.js
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAy78uI_2E8yWh8IUMk-tMhycQ1lkGi2gE",
@@ -15,5 +15,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+// Long polling avoids the streaming-connection hangs Safari / iOS home-screen apps sometimes hit
+export const db = initializeFirestore(app, { experimentalForceLongPolling: true });
 export const googleProvider = new GoogleAuthProvider();
