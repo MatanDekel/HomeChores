@@ -99,7 +99,7 @@ const THEMES = {
     weekCelebBorder: "#bae1ff",
     weekCelebColor: "#5bbfdf",
     // Font
-    fontFamily: "'Fredoka One',cursive",
+    fontFamily: "'Fredoka One','Rubik',cursive",
   },
   mature: {
     name: "Calm & Natural",
@@ -135,7 +135,7 @@ const THEMES = {
     weekCelebBg: "linear-gradient(135deg,#d4ddc8,#c8d4b8)",
     weekCelebBorder: "#b8c4a8",
     weekCelebColor: "#7a8c6e",
-    fontFamily: "'Nunito',sans-serif",
+    fontFamily: "'Nunito','Rubik',sans-serif",
   }
 };
 
@@ -145,6 +145,124 @@ function getTheme(user) {
   return THEMES[saved] || THEMES.fun;
 }
 const DAY_SHORT    = ["S","M","T","W","T","F","S"];
+// ─── i18n ─────────────────────────────────────────────────────────────────────
+const HE = {
+  // Nav / general
+  "Today":"היום","Calendar":"לוח שנה","Tasks":"משימות","Areas":"אזורים","DONE":"בוצע",
+  "Happy Home":"בית שמח","Happy Home 🏡":"בית שמח 🏡","Chore Tracker ✨":"מעקב מטלות ✨","Loading…":"טוען…",
+  "Save":"שמור","✏️ Edit":"✏️ עריכה","(you)":"(את/ה)",
+  // Auth
+  "Welcome back! 👋":"ברוכים השבים! 👋","Create account 🌟":"יצירת חשבון 🌟",
+  "Sign in to your household":"התחברות למשק הבית","Join or start a household":"הצטרפות או פתיחת משק בית",
+  "Continue with Google":"המשך עם Google","Connecting…":"מתחבר…","or with email":"או עם אימייל",
+  "Your name":"השם שלך","Email address":"כתובת אימייל","Password":"סיסמה",
+  "Sign In 🚀":"התחברות 🚀","Create Account 🎉":"יצירת חשבון 🎉",
+  "Don't have an account? ":"אין לך חשבון? ","Already have an account? ":"כבר יש לך חשבון? ",
+  "Sign up":"הרשמה","Sign in":"התחברות",
+  "Google sign-in failed. Try again 🔄":"ההתחברות עם Google נכשלה. נסו שוב 🔄",
+  "Please enter a valid email 📧":"נא להזין אימייל תקין 📧",
+  "Password must be at least 6 characters 🔒":"הסיסמה חייבת להכיל לפחות 6 תווים 🔒",
+  "Please enter your name 👋":"נא להזין שם 👋",
+  "No account with this email 🤷":"אין חשבון עם האימייל הזה 🤷","Wrong password 🔑":"סיסמה שגויה 🔑",
+  "Email already registered 😅":"האימייל כבר רשום 😅","Wrong email or password 🔑":"אימייל או סיסמה שגויים 🔑",
+  "Too many attempts. Try later ⏳":"יותר מדי ניסיונות. נסו מאוחר יותר ⏳",
+  "💌 You've been invited to a household! Sign in or sign up to join.":"💌 הוזמנת למשק בית! התחברו או הירשמו כדי להצטרף.",
+  // Join prompt
+  "You've been invited!":"הוזמנת!",
+  "Join this family's household? You'll see and share all of their tasks. You'll leave your current household.":"להצטרף למשק הבית של המשפחה? תראו ותשתפו את כל המשימות. תעזבו את משק הבית הנוכחי.",
+  "Join household 🏡":"הצטרפות 🏡","Joining…":"מצטרף…","Not now":"לא עכשיו",
+  "This invite link isn't valid anymore 😕":"קישור ההזמנה כבר לא בתוקף 😕",
+  // Today
+  "All done! You rock!":"הכל בוצע! כל הכבוד!","Cleaning superstar ⭐":"כוכב/ת ניקיון ⭐",
+  "Nothing due today!":"אין משימות להיום!","Enjoy your free day 🌈":"תהנו מיום חופשי 🌈",
+  "Morning":"בוקר","Evening":"ערב","Anytime":"כל שעה",
+  "This Week":"השבוע","Resets every Sunday":"מתאפס בכל יום ראשון","Week complete!":"השבוע הושלם!",
+  "{done} of {total} done":"{done} מתוך {total} בוצעו",
+  // Tasks tab
+  "📋 All Tasks":"📋 כל המשימות","＋ New Task":"＋ משימה חדשה","🏠 All":"🏠 הכל","❓ No area":"❓ ללא אזור",
+  "No tasks here!":"אין כאן משימות!","Try a different filter":"נסו סינון אחר","📋 Weekly":"📋 שבועית",
+  "No tasks yet!":"אין עדיין משימות!","Tap + New Task to get started":"לחצו על + משימה חדשה כדי להתחיל",
+  // Areas tab
+  "🗂️ Areas":"🗂️ אזורים","＋ New Area":"＋ אזור חדש","No areas yet!":"אין עדיין אזורים!",
+  "Create Kitchen, Bathroom, Living Room…":"צרו מטבח, מקלחת, סלון…","{n} tasks":"{n} משימות","1 task":"משימה אחת",
+  // Calendar
+  "📅 Week":"📅 שבוע","🗓️ Month":"🗓️ חודש","🌈 Free day!":"🌈 יום חופשי!",
+  // Account
+  "👤 My Account":"👤 החשבון שלי","🏠 Household Name":"🏠 שם משק הבית","👥 Members":"👥 חברים",
+  "👑 Owner":"👑 מנהל/ת","👤 Member":"👤 חבר/ה","🟦 Google":"🟦 Google","📧 Email":"📧 אימייל",
+  "🔗 Family Invite Link":"🔗 קישור הזמנה למשפחה",
+  "Send this link to family members — when they open it and sign in, they join your household 🏡":"שלחו את הקישור לבני המשפחה — כשיפתחו אותו ויתחברו, הם יצטרפו למשק הבית 🏡",
+  "📋 Copy":"📋 העתקה","✓ Copied!":"✓ הועתק!","📤 Share":"📤 שיתוף",
+  "✉️ Invite by Email":"✉️ הזמנה באימייל",
+  "They'll automatically join your household when they sign up with this email 🏡":"הם יצטרפו אוטומטית כשיירשמו עם האימייל הזה 🏡",
+  "Send 📨":"שליחה 📨","Invalid email 📧":"אימייל לא תקין 📧","Already a member 😊":"כבר חבר/ה במשק הבית 😊",
+  "Invite saved! When {email} signs up, they'll join your household 🎉":"ההזמנה נשמרה! כש-{email} יירשם/תירשם, הוא/היא יצטרפו למשק הבית 🎉",
+  "Join our household \"{name}\" on Happy Home!":"הצטרפו למשק הבית \"{name}\" באפליקציית בית שמח!",
+  "🎨 App Theme":"🎨 עיצוב","✓ Active":"✓ פעיל","🚪 Sign Out":"🚪 התנתקות","🌐 Language":"🌐 שפה",
+  "Fun & Colorful":"צבעוני ושמח","Calm & Natural":"רגוע וטבעי",
+  // Area modal
+  "✏️ Edit Area":"✏️ עריכת אזור","🏠 New Area":"🏠 אזור חדש","Pick an Emoji":"בחרו אימוג׳י","Quick Pick":"בחירה מהירה",
+  "Area Name":"שם האזור","Kitchen, Bathroom…":"מטבח, מקלחת…","Color":"צבע",
+  "Save Changes 💾":"שמירת שינויים 💾","Create Area 🎉":"יצירת אזור 🎉",
+  // Task modal
+  "✏️ Edit Task":"✏️ עריכת משימה","📋 New Task":"📋 משימה חדשה","Emoji":"אימוג׳י","What to do":"מה לעשות",
+  "Mop the floor…":"לשטוף את הרצפה…","Task Type":"סוג משימה","Daily task":"משימה יומית","Weekly task":"משימה שבועית",
+  "Who does it?":"מי עושה?","👨‍👩‍👧 Anyone":"👨‍👩‍👧 כל אחד",
+  "Invite family from settings to assign tasks to them":"הזמינו את המשפחה מההגדרות כדי לשייך להם משימות",
+  "Time of Day":"זמן ביום","Area":"אזור","— No area —":"— ללא אזור —","Cleaning Depth":"עומק ניקיון",
+  "Quick Tidy":"סידור מהיר","Light Clean":"ניקיון קל","Thorough Clean":"ניקיון יסודי","Deep Clean":"ניקיון עמוק",
+  "Repeat":"חזרה","Day(s)":"ימים","Week(s)":"שבועות","Month(s)":"חודשים","Year(s)":"שנים","Just Once":"פעם אחת",
+  "Every":"כל","On which day(s)":"באילו ימים","Repeat on":"לחזור ב","📅 Specific date":"📅 תאריך קבוע",
+  "📆 Day of week":"📆 יום בשבוע","Day":"יום","of the month":"בחודש",
+  "Happens just once":"פעם אחת בלבד","Just once 1️⃣":"פעם אחת 1️⃣",
+  "Notes (optional)":"הערות (לא חובה)","Any details… 📝":"פרטים נוספים… 📝","Add Task 🎉":"הוספת משימה 🎉",
+  // Suggested / default area names
+  "Kitchen":"מטבח","Living Room":"סלון","Guest Bathroom":"שירותי אורחים","Kids Bathroom":"שירותי ילדים",
+  "Parents Bathroom":"שירותי הורים","Office":"משרד","Master Bedroom":"חדר הורים","Printer Room":"חדר מדפסת",
+  "Safe Room":"ממ״ד","Balcony":"מרפסת","Laundry Room":"חדר כביסה",
+};
+let LANG = (typeof localStorage!=="undefined" && localStorage.getItem("hc:lang")) || "en";
+function applyLang(l) {
+  LANG = l==="he" ? "he" : "en";
+  try { localStorage.setItem("hc:lang", LANG); } catch {}
+  document.documentElement.dir  = LANG==="he" ? "rtl" : "ltr";
+  document.documentElement.lang = LANG;
+}
+applyLang(LANG);
+const tr  = (s) => (LANG==="he" && HE[s]) || s;
+const trf = (s, vars={}) => Object.entries(vars).reduce((acc,[k,v])=>acc.split(`{${k}}`).join(v), tr(s));
+const LOCALE   = () => LANG==="he" ? "he-IL" : LOCALE();
+const DAY_SHORT_L = () => LANG==="he" ? ["א","ב","ג","ד","ה","ו","ש"] : ["S","M","T","W","T","F","S"];
+const DAY_NAMES   = () => LANG==="he" ? ["א׳","ב׳","ג׳","ד׳","ה׳","ו׳","ש׳"] : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const DAY_FULL    = () => LANG==="he" ? ["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"] : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const ORDINALS    = () => LANG==="he" ? ["ה-1","ה-2","ה-3","ה-4"] : ["1st","2nd","3rd","4th"];
+const UNIT_WORDS = {
+  en:{ days:["day","days"], weeks:["week","weeks"], months:["month","months"], years:["year","years"] },
+  he:{ days:["יום","ימים"], weeks:["שבוע","שבועות"], months:["חודש","חודשים"], years:["שנה","שנים"] },
+};
+const unitWord  = (n,u) => (UNIT_WORDS[LANG][u]||UNIT_WORDS[LANG].weeks)[Number(n)===1?0:1];
+const everyText = (n,u) => Number(n)===1
+  ? (LANG==="he" ? `כל ${unitWord(1,u)}` : `Every ${unitWord(1,u)}`)
+  : (LANG==="he" ? `כל ${n} ${unitWord(n,u)}` : `Every ${n} ${unitWord(n,u)}`);
+const ordEn = (d) => d + (["th","st","nd","rd"][((d%100-20)%10+10)%10<4 && !(d%100>=11&&d%100<=13) ? ((d%100-20)%10+10)%10 : 0]);
+function repeatSummary({ unit, every, weekDays, monthMode, monthDay, monthWeekNum, monthWeekDay }) {
+  if (unit==="once") return tr("Happens just once");
+  const base = everyText(every, unit);
+  if (unit==="weeks" && weekDays?.length) {
+    const days = weekDays.map(d=>DAY_FULL()[d]).join(", ");
+    return LANG==="he" ? `${base}, בימים: ${days}` : `${base} on ${days}`;
+  }
+  if (unit==="months") {
+    if (monthMode==="weekday" && monthWeekNum) {
+      return LANG==="he"
+        ? `${base}, ביום ${DAY_FULL()[monthWeekDay]} ${ORDINALS()[monthWeekNum-1]} בחודש`
+        : `${base} on the ${ORDINALS()[monthWeekNum-1]} ${DAY_FULL()[monthWeekDay]}`;
+    }
+    if (monthDay) return LANG==="he" ? `${base}, ב-${monthDay} לחודש` : `${base} on the ${ordEn(monthDay)}`;
+  }
+  return base;
+}
+
 const DAY_EMOJI    = ["🌟","🌸","🌻","🌈","🎉","🎊","🌙"];
 const MONTH_NAMES  = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const GOOGLE_AVATARS = ["🧑","👩","👨","🧑‍💼","👩‍💼"];
@@ -164,9 +282,9 @@ function initials(name) { return (name||"?").trim().split(" ").map(w=>w[0]).join
 function validateEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
 function repeatLabel(task) {
-  if (task.repeatUnit==="once"||task.repeat==="once") return "Just once 1️⃣";
-  const n=task.repeatEvery||1, u=task.repeatUnit||"weeks";
-  return `Every ${n} ${n===1?u.replace(/s$/,""):u} ${UNITS.find(x=>x.val===u)?.emoji||""}`;
+  if (task.repeatUnit==="once"||task.repeat==="once") return tr("Just once 1️⃣");
+  const u=task.repeatUnit||"weeks";
+  return `${repeatSummary({unit:u,every:task.repeatEvery||1,weekDays:task.weekDays,monthMode:task.monthMode,monthDay:task.monthDay,monthWeekNum:task.monthWeekNum,monthWeekDay:task.monthWeekDay})} ${UNITS.find(x=>x.val===u)?.emoji||""}`;
 }
 function isTaskDue(task, date) {
   const created=new Date(task.createdAt?.toDate?.()??task.createdAt);
@@ -297,7 +415,7 @@ export default function Root() {
           members: arrayUnion({ id:user.id, name:user.name, email:user.email, avatar:user.avatar||"", role:"owner" })
         });
       } catch {}
-      setJoinError("This invite link isn't valid anymore 😕");
+      setJoinError(tr("This invite link isn't valid anymore 😕"));
       setJoinBusy(false);
       return;
     }
@@ -360,25 +478,24 @@ async function createHousehold(u) {
 function JoinPrompt({ busy, error, onAccept, onDecline }) {
   return (
     <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:20,
-      background:"radial-gradient(ellipse at 30% 0%,#ffe8f0,#fff8e7 50%,#e8f4ff)",fontFamily:"'Nunito','Segoe UI',sans-serif"}}>
+      background:"radial-gradient(ellipse at 30% 0%,#ffe8f0,#fff8e7 50%,#e8f4ff)",fontFamily:"'Nunito','Rubik','Segoe UI',sans-serif"}}>
       <div style={{background:"#fff",borderRadius:28,padding:"28px 24px",width:"100%",maxWidth:400,textAlign:"center",
         boxShadow:"0 12px 48px rgba(255,182,193,.3)",border:"2px solid #ffd6e7"}}>
         <div style={{fontSize:54,marginBottom:8}}>💌</div>
-        <div style={{fontFamily:"'Fredoka One',cursive",fontSize:22,color:"#ff6b9d",marginBottom:8}}>You've been invited!</div>
+        <div style={{fontFamily:"'Fredoka One','Rubik',cursive",fontSize:22,color:"#ff6b9d",marginBottom:8}}>{tr("You've been invited!")}</div>
         <p style={{fontSize:14,color:"#888",fontWeight:600,lineHeight:1.6,marginBottom:20}}>
-          Join this family's household? You'll see and share all of their tasks.
-          You'll leave your current household.
+          {tr("Join this family's household? You'll see and share all of their tasks. You'll leave your current household.")}
         </p>
         {error&&<div style={{background:"#fff0f3",border:"2px solid #ffb3ba",borderRadius:12,padding:"10px",marginBottom:14,fontSize:13,fontWeight:700,color:"#e05080"}}>{error}</div>}
         <button onClick={onAccept} disabled={busy}
           style={{width:"100%",padding:"13px",borderRadius:16,border:"none",cursor:"pointer",fontFamily:"inherit",marginBottom:10,
             background:"linear-gradient(135deg,#ffb3ba,#ffd6a5,#c9f0ff)",fontSize:16,fontWeight:900,color:"#555",opacity:busy?.6:1}}>
-          {busy?"Joining…":"Join household 🏡"}
+          {busy?tr("Joining…"):tr("Join household 🏡")}
         </button>
         <button onClick={onDecline} disabled={busy}
           style={{width:"100%",padding:"12px",borderRadius:16,border:"2px solid #eee",background:"#fff",cursor:"pointer",
             fontFamily:"inherit",fontSize:15,fontWeight:800,color:"#aaa"}}>
-          Not now
+          {tr("Not now")}
         </button>
       </div>
     </div>
@@ -392,8 +509,8 @@ function Splash() {
       background:"linear-gradient(135deg,#ffd6e7,#fff0ba,#c9f0ff)",fontFamily:"Nunito,sans-serif"}}>
       <div style={{textAlign:"center"}}>
         <div style={{fontSize:64,marginBottom:8}}>🏡</div>
-        <div style={{fontFamily:"'Fredoka One',cursive",fontSize:28,color:"#ff6b9d"}}>Happy Home</div>
-        <div style={{fontSize:13,color:"#ffb3c6",marginTop:6}}>Loading…</div>
+        <div style={{fontFamily:"'Fredoka One','Rubik',cursive",fontSize:28,color:"#ff6b9d"}}>{tr("Happy Home")}</div>
+        <div style={{fontSize:13,color:"#ffb3c6",marginTop:6}}>{tr("Loading…")}</div>
       </div>
     </div>
   );
@@ -401,6 +518,7 @@ function Splash() {
 
 // ── Auth Screen ────────────────────────────────────────────────────────────────
 function AuthScreen() {
+  const [, forceLang] = useState(LANG);
   const [mode,    setMode]    = useState("login");
   const [name,    setName]    = useState("");
   const [email,   setEmail]   = useState("");
@@ -414,16 +532,16 @@ function AuthScreen() {
     try {
       await signInWithPopup(auth, googleProvider);
     } catch(e) {
-      setError("Google sign-in failed. Try again 🔄");
+      setError(tr("Google sign-in failed. Try again 🔄"));
       setLoading(false);
     }
   };
 
   const handleEmail = async (e) => {
     e.preventDefault(); setError("");
-    if(!validateEmail(email)) { setError("Please enter a valid email 📧"); return; }
-    if(pass.length<6)         { setError("Password must be at least 6 characters 🔒"); return; }
-    if(mode==="signup"&&!name.trim()) { setError("Please enter your name 👋"); return; }
+    if(!validateEmail(email)) { setError(tr("Please enter a valid email 📧")); return; }
+    if(pass.length<6)         { setError(tr("Password must be at least 6 characters 🔒")); return; }
+    if(mode==="signup"&&!name.trim()) { setError(tr("Please enter your name 👋")); return; }
     setLoading(true);
     try {
       if(mode==="login") {
@@ -434,11 +552,11 @@ function AuthScreen() {
       }
     } catch(e) {
       const msgs = {
-        "auth/user-not-found":      "No account with this email 🤷",
-        "auth/wrong-password":      "Wrong password 🔑",
-        "auth/email-already-in-use":"Email already registered 😅",
-        "auth/invalid-credential":  "Wrong email or password 🔑",
-        "auth/too-many-requests":   "Too many attempts. Try later ⏳",
+        "auth/user-not-found":      tr("No account with this email 🤷"),
+        "auth/wrong-password":      tr("Wrong password 🔑"),
+        "auth/email-already-in-use":tr("Email already registered 😅"),
+        "auth/invalid-credential":  tr("Wrong email or password 🔑"),
+        "auth/too-many-requests":   tr("Too many attempts. Try later ⏳"),
       };
       setError(msgs[e.code] || `Error: ${e.message}`);
       setLoading(false);
@@ -448,10 +566,10 @@ function AuthScreen() {
   const isLogin = mode==="login";
   return (
     <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 0%,#ffe8f0,#fff8e7 50%,#e8f4ff)",
-      fontFamily:"'Nunito','Segoe UI',sans-serif",display:"flex",flexDirection:"column",
+      fontFamily:"'Nunito','Rubik','Segoe UI',sans-serif",display:"flex",flexDirection:"column",
       alignItems:"center",justifyContent:"center",padding:20}}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&family=Rubik:wght@400;600;700;800;900&display=swap');
         *{box-sizing:border-box;margin:0;padding:0;}
         .bn{transition:transform .12s;cursor:pointer;}.bn:hover{transform:scale(1.04);}.bn:active{transform:scale(.97);}
         @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
@@ -459,24 +577,32 @@ function AuthScreen() {
         input{font-family:inherit;outline:none;}
         .fi:focus{border-color:#ff85a1!important;box-shadow:0 0 0 3px rgba(255,133,161,.15);}
       `}</style>
+      <div style={{display:"flex",gap:4,background:"rgba(255,255,255,.7)",borderRadius:12,padding:3,marginBottom:16}}>
+        {[{key:"en",label:"EN"},{key:"he",label:"עב"}].map(l=>(
+          <button key={l.key} onClick={()=>{applyLang(l.key);forceLang(l.key);}}
+            style={{border:"none",borderRadius:9,padding:"5px 12px",cursor:"pointer",fontFamily:"inherit",fontWeight:900,fontSize:13,
+              background:LANG===l.key?"#fff":"transparent",color:LANG===l.key?"#ff6b9d":"#bbb",
+              boxShadow:LANG===l.key?"0 2px 6px rgba(255,133,161,.2)":"none"}}>{l.label}</button>
+        ))}
+      </div>
       <div className="fu" style={{textAlign:"center",marginBottom:28}}>
         <div style={{fontSize:54,marginBottom:6}}>🏡</div>
-        <div style={{fontFamily:T.fontFamily,fontSize:26,color:T.primary}}>Happy Home</div>
-        <div style={{fontSize:11,color:"#ffb3c6",fontWeight:800,letterSpacing:2,textTransform:"uppercase",marginTop:2}}>Chore Tracker ✨</div>
+        <div style={{fontFamily:T.fontFamily,fontSize:26,color:T.primary}}>{tr("Happy Home")}</div>
+        <div style={{fontSize:11,color:"#ffb3c6",fontWeight:800,letterSpacing:2,textTransform:"uppercase",marginTop:2}}>{tr("Chore Tracker ✨")}</div>
       </div>
       <div className="fu" style={{background:"#fff",borderRadius:28,padding:"28px 24px",width:"100%",maxWidth:400,
         boxShadow:"0 12px 48px rgba(255,182,193,.3)",border:"2px solid #ffd6e7"}}>
         {localStorage.getItem("hc:join")&&(
           <div style={{background:"linear-gradient(135deg,#fff0ba,#ffd6e7)",borderRadius:14,padding:"10px 14px",marginBottom:16,
             textAlign:"center",fontSize:13,fontWeight:800,color:"#c06080"}}>
-            💌 You've been invited to a household! Sign in or sign up to join.
+            {tr("💌 You've been invited to a household! Sign in or sign up to join.")}
           </div>
         )}
-        <h2 style={{fontFamily:"'Fredoka One',cursive",fontSize:22,color:"#ff6b9d",marginBottom:4,textAlign:"center"}}>
-          {isLogin?"Welcome back! 👋":"Create account 🌟"}
+        <h2 style={{fontFamily:"'Fredoka One','Rubik',cursive",fontSize:22,color:"#ff6b9d",marginBottom:4,textAlign:"center"}}>
+          {isLogin?tr("Welcome back! 👋"):tr("Create account 🌟")}
         </h2>
         <p style={{fontSize:13,color:"#bbb",textAlign:"center",marginBottom:22,fontWeight:600}}>
-          {isLogin?"Sign in to your household":"Join or start a household"}
+          {isLogin?tr("Sign in to your household"):tr("Join or start a household")}
         </p>
         <button className="bn" onClick={handleGoogle} disabled={loading}
           style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"center",gap:10,
@@ -489,32 +615,32 @@ function AuthScreen() {
             <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
             <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
           </svg>
-          {loading?"Connecting…":"Continue with Google"}
+          {loading?tr("Connecting…"):tr("Continue with Google")}
         </button>
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
           <div style={{flex:1,height:1,background:"#f0f0f0"}}/>
-          <span style={{fontSize:12,color:"#ccc",fontWeight:700}}>or with email</span>
+          <span style={{fontSize:12,color:"#ccc",fontWeight:700}}>{tr("or with email")}</span>
           <div style={{flex:1,height:1,background:"#f0f0f0"}}/>
         </div>
         <form onSubmit={handleEmail}>
           {!isLogin&&(
             <div style={{position:"relative",marginBottom:12}}>
-              <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",fontSize:16}}>👤</span>
-              <input className="fi" value={name} onChange={e=>setName(e.target.value)} placeholder="Your name" type="text"
-                style={{width:"100%",padding:"11px 12px 11px 40px",borderRadius:13,border:"2px solid #f0f0f0",background:"#fff8f0",fontSize:16,color:"#444"}}/>
+              <span style={{position:"absolute",insetInlineStart:12,top:"50%",transform:"translateY(-50%)",fontSize:16}}>👤</span>
+              <input className="fi" value={name} onChange={e=>setName(e.target.value)} placeholder={tr("Your name")} type="text"
+                style={{width:"100%",paddingBlock:11,paddingInlineStart:40,paddingInlineEnd:12,borderRadius:13,border:"2px solid #f0f0f0",background:"#fff8f0",fontSize:16,color:"#444"}}/>
             </div>
           )}
           <div style={{position:"relative",marginBottom:12}}>
-            <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",fontSize:16}}>📧</span>
-            <input className="fi" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email address" type="email"
-              style={{width:"100%",padding:"11px 12px 11px 40px",borderRadius:13,border:"2px solid #f0f0f0",background:"#fff8f0",fontSize:16,color:"#444"}}/>
+            <span style={{position:"absolute",insetInlineStart:12,top:"50%",transform:"translateY(-50%)",fontSize:16}}>📧</span>
+            <input className="fi" value={email} onChange={e=>setEmail(e.target.value)} placeholder={tr("Email address")} type="email"
+              style={{width:"100%",paddingBlock:11,paddingInlineStart:40,paddingInlineEnd:12,borderRadius:13,border:"2px solid #f0f0f0",background:"#fff8f0",fontSize:16,color:"#444"}}/>
           </div>
           <div style={{position:"relative",marginBottom:14}}>
-            <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",fontSize:16}}>🔒</span>
-            <input className="fi" value={pass} onChange={e=>setPass(e.target.value)} placeholder="Password" type={showPass?"text":"password"}
-              style={{width:"100%",padding:"11px 40px 11px 40px",borderRadius:13,border:"2px solid #f0f0f0",background:"#fff8f0",fontSize:16,color:"#444"}}/>
+            <span style={{position:"absolute",insetInlineStart:12,top:"50%",transform:"translateY(-50%)",fontSize:16}}>🔒</span>
+            <input className="fi" value={pass} onChange={e=>setPass(e.target.value)} placeholder={tr("Password")} type={showPass?"text":"password"}
+              style={{width:"100%",paddingBlock:11,paddingInline:40,borderRadius:13,border:"2px solid #f0f0f0",background:"#fff8f0",fontSize:16,color:"#444"}}/>
             <button type="button" onClick={()=>setShowPass(!showPass)}
-              style={{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",fontSize:16,color:"#ccc",padding:0}}>
+              style={{position:"absolute",insetInlineEnd:12,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",fontSize:16,color:"#ccc",padding:0}}>
               {showPass?"🙈":"👁️"}
             </button>
           </div>
@@ -526,14 +652,14 @@ function AuthScreen() {
             style={{width:"100%",padding:"13px",borderRadius:16,border:"none",cursor:"pointer",fontFamily:"inherit",
               background:"linear-gradient(135deg,#ffb3ba,#ffd6a5,#c9f0ff)",fontSize:15,fontWeight:900,color:"#555",
               boxShadow:"0 6px 20px rgba(255,182,193,.45)",opacity:loading?.7:1}}>
-            {loading?"Loading…":isLogin?"Sign In 🚀":"Create Account 🎉"}
+            {loading?tr("Loading…"):isLogin?tr("Sign In 🚀"):tr("Create Account 🎉")}
           </button>
         </form>
         <p style={{textAlign:"center",marginTop:18,fontSize:13,color:"#bbb",fontWeight:700}}>
-          {isLogin?"Don't have an account? ":"Already have an account? "}
+          {isLogin?tr("Don't have an account? "):tr("Already have an account? ")}
           <span onClick={()=>{setMode(isLogin?"signup":"login");setError("");}}
             style={{color:"#ff6b9d",cursor:"pointer",textDecoration:"underline"}}>
-            {isLogin?"Sign up":"Sign in"}
+            {isLogin?tr("Sign up"):tr("Sign in")}
           </span>
         </p>
       </div>
@@ -563,6 +689,14 @@ function App({ user, onLogout }) {
   const [themeKey,    setThemeKey]    = useState(() => user?.theme || localStorage.getItem("hc:theme") || "fun");
   const T = THEMES[themeKey] || THEMES.fun;
 
+  const [lang, setLangState] = useState(() => {
+    if (user?.lang && user.lang!==LANG) applyLang(user.lang);
+    return LANG;
+  });
+  const changeLang = async (l) => {
+    applyLang(l); setLangState(l);
+    try { await updateDoc(doc(db, "users", user.id), { lang: l }); } catch {}
+  };
   const changeTheme = async (key) => {
     setThemeKey(key);
     localStorage.setItem("hc:theme", key);
@@ -618,8 +752,8 @@ function App({ user, onLogout }) {
     await setDoc(doneRef, newVal, { merge: true });
   };
   const sendInvite = async (email) => {
-    if(!validateEmail(email)) return "Invalid email 📧";
-    if(household?.members?.find(m=>m.email===email)) return "Already a member 😊";
+    if(!validateEmail(email)) return tr("Invalid email 📧");
+    if(household?.members?.find(m=>m.email===email)) return tr("Already a member 😊");
     await setDoc(doc(db, "invites", email.toLowerCase()), {
       householdId: hid, invitedBy: user.name, invitedAt: serverTimestamp()
     });
@@ -641,17 +775,17 @@ function App({ user, onLogout }) {
   const weeklyDoneCount = weeklyTasks.filter(t=>thisWeekDone[t.id]).length;
 
   const TABS = [
-    {id:"today",emoji:"☀️",label:"Today"},
-    {id:"calendar",emoji:"📅",label:"Calendar"},
-    {id:"tasks",emoji:"📋",label:"Tasks"},
-    {id:"areas",emoji:"🗂️",label:"Areas"},
+    {id:"today",emoji:"☀️",label:tr("Today")},
+    {id:"calendar",emoji:"📅",label:tr("Calendar")},
+    {id:"tasks",emoji:"📋",label:tr("Tasks")},
+    {id:"areas",emoji:"🗂️",label:tr("Areas")},
   ];
 
   return (
     <div style={{minHeight:"100vh",background:T.pageBg,
-      fontFamily:"'Nunito','Segoe UI',sans-serif"}}>
+      fontFamily:"'Nunito','Rubik','Segoe UI',sans-serif"}}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&family=Rubik:wght@400;600;700;800;900&display=swap');
         *{box-sizing:border-box;margin:0;padding:0;}
         ::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-thumb{background:#ffd6e7;border-radius:10px;}
         .bn{transition:transform .12s;cursor:pointer;}.bn:hover{transform:scale(1.06);}.bn:active{transform:scale(.95);}
@@ -683,7 +817,7 @@ function App({ user, onLogout }) {
             {tab==="today"&&(
               <div style={{background:"rgba(255,255,255,.55)",borderRadius:14,padding:"5px 12px",textAlign:"center"}}>
                 <div style={{fontFamily:T.fontFamily,fontSize:20,color:doneCount===todayTasks.length&&todayTasks.length>0?"#5cb85c":T.primary,lineHeight:1}}>{doneCount}/{todayTasks.length}</div>
-                <div style={{fontSize:9,color:T.primaryLight,fontWeight:800,letterSpacing:1}}>DONE</div>
+                <div style={{fontSize:9,color:T.primaryLight,fontWeight:800,letterSpacing:1}}>{tr("DONE")}</div>
               </div>
             )}
             <div className="bn" onClick={()=>setShowAccount(true)}
@@ -715,7 +849,7 @@ function App({ user, onLogout }) {
                 background:tab===t.id?T.tabActiveBg:"rgba(255,255,255,.35)",color:tab===t.id?T.tabActiveColor:T.tabInactiveColor,
                 fontWeight:800,fontSize:11,fontFamily:"inherit",cursor:"pointer",
                 boxShadow:tab===t.id?`0 -2px 12px ${T.cardShadow}`:"none",letterSpacing:.5}}>
-              <div style={{fontSize:16,marginBottom:1}}>{t.emoji}</div>{t.label}
+              <div style={{fontSize:16,marginBottom:1}}>{t.emoji}</div>{tr(t.label)}
             </button>
           ))}
         </div>
@@ -729,36 +863,36 @@ function App({ user, onLogout }) {
             <div style={{background:"#fff",borderRadius:24,padding:"18px 20px",marginBottom:16,
               boxShadow:`0 6px 28px ${T.cardShadow}`,border:`2px solid ${T.cardBorder}`,textAlign:"center"}}>
               <div style={{fontSize:40,marginBottom:4}}>{DAY_EMOJI[new Date().getDay()]}</div>
-              <div style={{fontFamily:"'Fredoka One',cursive",fontSize:26,color:"#ff6b9d"}}>
-                {new Date().toLocaleDateString("en-US",{weekday:"long"})}
+              <div style={{fontFamily:"'Fredoka One','Rubik',cursive",fontSize:26,color:"#ff6b9d"}}>
+                {new Date().toLocaleDateString(LOCALE(),{weekday:"long"})}
               </div>
               <div style={{color:"#ccc",fontSize:13,fontWeight:700,marginBottom:todayTasks.length?12:0}}>
-                {new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"})}
+                {new Date().toLocaleDateString(LOCALE(),{month:"long",day:"numeric",year:"numeric"})}
               </div>
               {todayTasks.length>0&&(<>
                 <div style={{height:10,background:"#f5f5f5",borderRadius:20,overflow:"hidden"}}>
                   <div style={{height:"100%",borderRadius:20,transition:"width .55s cubic-bezier(.34,1.2,.64,1)",
                     background:T.progressBg,width:`${(doneCount/todayTasks.length)*100}%`}}/>
                 </div>
-                <div style={{fontSize:12,color:"#bbb",marginTop:5,fontWeight:700}}>{doneCount} of {todayTasks.length} done</div>
+                <div style={{fontSize:12,color:"#bbb",marginTop:5,fontWeight:700}}>{trf("{done} of {total} done",{done:doneCount,total:todayTasks.length})}</div>
               </>)}
             </div>
             {doneCount===todayTasks.length&&todayTasks.length>0&&(
               <div className="pu" style={{textAlign:"center",background:T.celebBg,
                 borderRadius:20,padding:"18px",marginBottom:16,border:`2px solid ${T.celebBorder}`}}>
                 <div style={{fontSize:48}}>🎉</div>
-                <div style={{fontFamily:T.fontFamily,fontSize:22,color:T.celebColor}}>All done! You rock!</div>
-                <div style={{fontSize:13,color:"#7dc87d",marginTop:3}}>Cleaning superstar ⭐</div>
+                <div style={{fontFamily:T.fontFamily,fontSize:22,color:T.celebColor}}>{tr("All done! You rock!")}</div>
+                <div style={{fontSize:13,color:"#7dc87d",marginTop:3}}>{tr("Cleaning superstar ⭐")}</div>
               </div>
             )}
             {todayTasks.length===0
-              ?<Empty emoji="☀️" text="Nothing due today!" sub="Enjoy your free day 🌈"/>
+              ?<Empty emoji="☀️" text={tr("Nothing due today!")} sub={tr("Enjoy your free day 🌈")}/>
               :<div style={{display:"flex",flexDirection:"column",gap:16}}>
                 {morningTasks.length>0&&(
                   <div>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
                       <span style={{fontSize:20}}>🌅</span>
-                      <div style={{fontFamily:T.fontFamily,fontSize:16,fontWeight:900,color:"#e8a020"}}>Morning</div>
+                      <div style={{fontFamily:T.fontFamily,fontSize:16,fontWeight:900,color:"#e8a020"}}>{tr("Morning")}</div>
                       <div style={{flex:1,height:1.5,background:"linear-gradient(90deg,#ffe4a0,transparent)",borderRadius:2}}/>
                       <div style={{fontSize:12,fontWeight:800,color:"#e8a020",background:"#fff4c2",borderRadius:8,padding:"2px 8px"}}>
                         {morningTasks.filter(t=>todayDone[t.id]).length}/{morningTasks.length}
@@ -779,7 +913,7 @@ function App({ user, onLogout }) {
                     {(morningTasks.length>0||eveningTasks.length>0)&&(
                       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
                         <span style={{fontSize:20}}>🕐</span>
-                        <div style={{fontFamily:T.fontFamily,fontSize:16,fontWeight:900,color:"#888"}}>Anytime</div>
+                        <div style={{fontFamily:T.fontFamily,fontSize:16,fontWeight:900,color:"#888"}}>{tr("Anytime")}</div>
                         <div style={{flex:1,height:1.5,background:"linear-gradient(90deg,#e0e0e0,transparent)",borderRadius:2}}/>
                         <div style={{fontSize:12,fontWeight:800,color:"#888",background:"#f5f5f5",borderRadius:8,padding:"2px 8px"}}>
                           {anytimeTasks.filter(t=>todayDone[t.id]).length}/{anytimeTasks.length}
@@ -799,7 +933,7 @@ function App({ user, onLogout }) {
                   <div>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
                       <span style={{fontSize:20}}>🌙</span>
-                      <div style={{fontFamily:T.fontFamily,fontSize:16,fontWeight:900,color:"#7060b8"}}>Evening</div>
+                      <div style={{fontFamily:T.fontFamily,fontSize:16,fontWeight:900,color:"#7060b8"}}>{tr("Evening")}</div>
                       <div style={{flex:1,height:1.5,background:"linear-gradient(90deg,#c5cff5,transparent)",borderRadius:2}}/>
                       <div style={{fontSize:12,fontWeight:800,color:"#7060b8",background:"#e8e4f8",borderRadius:8,padding:"2px 8px"}}>
                         {eveningTasks.filter(t=>todayDone[t.id]).length}/{eveningTasks.length}
@@ -825,8 +959,8 @@ function App({ user, onLogout }) {
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
                     <span style={{fontSize:20}}>📋</span>
                     <div>
-                      <div style={{fontFamily:T.fontFamily,fontSize:18,color:T.secondary,lineHeight:1}}>This Week</div>
-                      <div style={{fontSize:11,color:"#aad4e8",fontWeight:700}}>Resets every Sunday</div>
+                      <div style={{fontFamily:T.fontFamily,fontSize:18,color:T.secondary,lineHeight:1}}>{tr("This Week")}</div>
+                      <div style={{fontSize:11,color:"#aad4e8",fontWeight:700}}>{tr("Resets every Sunday")}</div>
                     </div>
                   </div>
                   <div style={{background:T.secondaryPale,borderRadius:10,padding:"4px 12px",fontSize:12,fontWeight:800,color:T.secondary}}>
@@ -843,7 +977,7 @@ function App({ user, onLogout }) {
                   <div className="pu" style={{textAlign:"center",background:T.weekCelebBg,
                     borderRadius:16,padding:"14px",marginBottom:12,border:`2px solid ${T.weekCelebBorder}`}}>
                     <div style={{fontSize:36}}>🌟</div>
-                    <div style={{fontFamily:T.fontFamily,fontSize:18,color:T.weekCelebColor}}>Week complete!</div>
+                    <div style={{fontFamily:T.fontFamily,fontSize:18,color:T.weekCelebColor}}>{tr("Week complete!")}</div>
                   </div>
                 )}
                 <div style={{display:"flex",flexDirection:"column",gap:10}}>
@@ -870,8 +1004,8 @@ function App({ user, onLogout }) {
         {tab==="tasks"&&(
           <div className="fu">
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-              <div style={{fontFamily:T.fontFamily,fontSize:22,color:T.primary}}>📋 All Tasks</div>
-              <PastelBtn onClick={()=>setTaskModal({})} T={T}>＋ New Task</PastelBtn>
+              <div style={{fontFamily:T.fontFamily,fontSize:22,color:T.primary}}>{tr("📋 All Tasks")}</div>
+              <PastelBtn onClick={()=>setTaskModal({})} T={T}>{tr("＋ New Task")}</PastelBtn>
             </div>
             {/* Area filter chips */}
             <div style={{display:"flex",gap:6,overflowX:"auto",marginBottom:16,paddingBottom:4}}>
@@ -880,14 +1014,14 @@ function App({ user, onLogout }) {
                   background:filterArea===null?"linear-gradient(135deg,#ffb3ba,#c9f0ff)":"#f5f5f5",
                   border:`2px solid ${filterArea===null?"#ff85a1":"transparent"}`,
                   fontSize:13,fontWeight:800,color:filterArea===null?"#ff6b9d":"#bbb"}}>
-                🏠 All
+                {tr("🏠 All")}
               </div>
               <div className="bn" onClick={()=>setFilterArea("none")}
                 style={{padding:"6px 14px",borderRadius:20,whiteSpace:"nowrap",flexShrink:0,
                   background:filterArea==="none"?"linear-gradient(135deg,#ffb3ba,#c9f0ff)":"#f5f5f5",
                   border:`2px solid ${filterArea==="none"?"#ff85a1":"transparent"}`,
                   fontSize:13,fontWeight:800,color:filterArea==="none"?"#ff6b9d":"#bbb"}}>
-                ❓ No area
+                {tr("❓ No area")}
               </div>
               {areas.map(a=>(
                 <div key={a.id} className="bn" onClick={()=>setFilterArea(a.id)}
@@ -895,7 +1029,7 @@ function App({ user, onLogout }) {
                     background:filterArea===a.id?a.color:"#f5f5f5",
                     border:`2px solid ${filterArea===a.id?a.color+"bb":"transparent"}`,
                     fontSize:13,fontWeight:800,color:filterArea===a.id?"#555":"#bbb"}}>
-                  {a.emoji} {a.name}
+                  {a.emoji} {tr(a.name)}
                 </div>
               ))}
             </div>
@@ -906,7 +1040,7 @@ function App({ user, onLogout }) {
                 t.areaId===filterArea
               );
               return filtered.length===0
-                ?<Empty emoji="🔍" text="No tasks here!" sub="Try a different filter"/>
+                ?<Empty emoji="🔍" text={tr("No tasks here!")} sub={tr("Try a different filter")}/>
                 :<div style={{display:"flex",flexDirection:"column",gap:10}}>
                 {filtered.map((task,i)=>{
                   const area=areas.find(a=>a.id===task.areaId);
@@ -919,9 +1053,9 @@ function App({ user, onLogout }) {
                       <div style={{flex:1,minWidth:0}}>
                         <div style={{fontWeight:800,color:"#444",fontSize:15,marginBottom:4}}>{task.title}</div>
                         <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-                          {area&&<Pill bg={area.color}>{area.emoji} {area.name}</Pill>}
-                          <Pill bg={dep.color}>{dep.emoji} {dep.label}</Pill>
-                          <Pill bg="#e8f4ff">{task.taskType==="weekly"?"📋 Weekly":repeatLabel(task)}</Pill>
+                          {area&&<Pill bg={area.color}>{area.emoji} {tr(area.name)}</Pill>}
+                          <Pill bg={dep.color}>{dep.emoji} {tr(dep.label)}</Pill>
+                          <Pill bg="#e8f4ff">{task.taskType==="weekly"?tr("📋 Weekly"):repeatLabel(task)}</Pill>
                           {(task.assignedTo||[]).length>0&&<Pill bg="#fff0ba">👤 {(task.assignedTo||[]).map(id=>household?.members?.find(m=>m.id===id)?.name.split(" ")[0]).filter(Boolean).join(", ")}</Pill>}
                         </div>
                       </div>
@@ -943,10 +1077,10 @@ function App({ user, onLogout }) {
         {tab==="areas"&&(
           <div className="fu">
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
-              <div style={{fontFamily:T.fontFamily,fontSize:22,color:T.primary}}>🗂️ Areas</div>
-              <PastelBtn onClick={()=>setAreaModal({})} T={T}>＋ New Area</PastelBtn>
+              <div style={{fontFamily:T.fontFamily,fontSize:22,color:T.primary}}>{tr("🗂️ Areas")}</div>
+              <PastelBtn onClick={()=>setAreaModal({})} T={T}>{tr("＋ New Area")}</PastelBtn>
             </div>
-            {areas.length===0?<Empty emoji="🏡" text="No areas yet!" sub="Create Kitchen, Bathroom, Living Room…"/>
+            {areas.length===0?<Empty emoji="🏡" text={tr("No areas yet!")} sub={tr("Create Kitchen, Bathroom, Living Room…")}/>
               :<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
                 {areas.map((area,i)=>{
                   const count=tasks.filter(t=>t.areaId===area.id).length;
@@ -956,12 +1090,12 @@ function App({ user, onLogout }) {
                       boxShadow:`0 6px 22px ${area.color}55`,position:"relative",overflow:"hidden"}}>
                       <div style={{position:"absolute",top:-8,right:-8,fontSize:54,opacity:.1,userSelect:"none"}}>{area.emoji}</div>
                       <div style={{fontSize:34,marginBottom:6}}>{area.emoji||"🏠"}</div>
-                      <div style={{fontWeight:900,color:"#444",fontSize:16,marginBottom:2}}>{area.name}</div>
-                      <div style={{fontSize:12,color:"#bbb",marginBottom:10,fontWeight:700}}>{count} task{count!==1?"s":""}</div>
+                      <div style={{fontWeight:900,color:"#444",fontSize:16,marginBottom:2}}>{tr(area.name)}</div>
+                      <div style={{fontSize:12,color:"#bbb",marginBottom:10,fontWeight:700}}>{count===1?tr("1 task"):trf("{n} tasks",{n:count})}</div>
                       <div style={{display:"flex",gap:6}}>
                         <button className="bn" onClick={()=>setAreaModal(area)}
                           style={{flex:1,background:area.color+"44",border:"none",borderRadius:10,padding:"6px",
-                            cursor:"pointer",fontSize:12,fontWeight:800,color:"#666",fontFamily:"inherit"}}>✏️ Edit</button>
+                            cursor:"pointer",fontSize:12,fontWeight:800,color:"#666",fontFamily:"inherit"}}>{tr("✏️ Edit")}</button>
                         <button className="bn" onClick={()=>deleteArea(area.id)}
                           style={{background:"#fff0f3",border:"none",borderRadius:10,padding:"6px 9px",cursor:"pointer",fontSize:16}}>🗑️</button>
                       </div>
@@ -978,7 +1112,8 @@ function App({ user, onLogout }) {
       {showAccount&&(
         <AccountSheet user={user} household={household} onInvite={sendInvite}
           onRename={renameHousehold} onLogout={onLogout} onClose={()=>setShowAccount(false)}
-          themeKey={themeKey} onThemeChange={changeTheme} T={T}/>
+          themeKey={themeKey} onThemeChange={changeTheme} T={T}
+          lang={lang} onLangChange={changeLang}/>
       )}
     </div>
   );
@@ -1005,8 +1140,8 @@ function TaskRow({ task, isDone, area, delay=0, onToggle, members=[], accent=nul
       <div style={{flex:1,minWidth:0}}>
         <div style={{fontWeight:800,color:isDone?"#bbb":"#444",fontSize:15,textDecoration:isDone?"line-through":"none",marginBottom:3}}>{task.title}</div>
         <div style={{display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
-          {area&&<Pill bg={isDone?"#eee":area.color}>{area.emoji} {area.name}</Pill>}
-          <Pill bg={isDone?"#eee":dep.color}>{dep.emoji} {dep.label}</Pill>
+          {area&&<Pill bg={isDone?"#eee":area.color}>{area.emoji} {tr(area.name)}</Pill>}
+          <Pill bg={isDone?"#eee":dep.color}>{dep.emoji} {tr(dep.label)}</Pill>
           {assignees.length>0&&<Pill bg={isDone?"#eee":"#fff0ba"}>👤 {assignees.map(m=>m.name.split(" ")[0]).join(", ")}</Pill>}
         </div>
       </div>
@@ -1037,8 +1172,8 @@ function CalendarView({ tasks, done, areas, members, calView, setCalView, calDat
           background:isSel?"linear-gradient(135deg,#ffb3ba,#c9f0ff)":isToday?"#fff8e7":"transparent",
           border:`2px solid ${isSel?"#ff85a1":isToday?"#ffd6e7":"transparent"}`,
           boxShadow:isSel?"0 4px 14px rgba(255,133,161,.3)":"none"}}>
-        {!small&&<div style={{fontSize:9,fontWeight:800,color:isSel?"rgba(255,255,255,.8)":"#ccc",marginBottom:2}}>{DAY_SHORT[day.getDay()]}</div>}
-        <div style={{fontFamily:"'Fredoka One',cursive",fontSize:small?13:16,color:isSel?"#fff":isToday?"#ff6b9d":"#555",lineHeight:1}}>{day.getDate()}</div>
+        {!small&&<div style={{fontSize:9,fontWeight:800,color:isSel?"rgba(255,255,255,.8)":"#ccc",marginBottom:2}}>{DAY_SHORT_L()[day.getDay()]}</div>}
+        <div style={{fontFamily:"'Fredoka One','Rubik',cursive",fontSize:small?13:16,color:isSel?"#fff":isToday?"#ff6b9d":"#555",lineHeight:1}}>{day.getDate()}</div>
         {dot&&<div style={{width:6,height:6,borderRadius:"50%",background:dot,margin:"3px auto 0"}}/>}
         {!small&&cnt>0&&<div style={{fontSize:9,color:isSel?"rgba(255,255,255,.7)":"#ddd",marginTop:1}}>{cnt}</div>}
       </div>
@@ -1048,11 +1183,11 @@ function CalendarView({ tasks, done, areas, members, calView, setCalView, calDat
     <div className="fu">
       <div style={{background:"#fff",borderRadius:22,padding:"14px 16px",marginBottom:14,border:"2px solid #ffd6e7",boxShadow:"0 4px 18px rgba(255,182,193,.2)"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-          <button className="bn" onClick={()=>nav(-1)} style={{background:"#ffd6e7",border:"none",borderRadius:12,width:36,height:36,fontSize:18,cursor:"pointer"}}>←</button>
-          <div style={{fontFamily:"'Fredoka One',cursive",fontSize:17,color:"#ff6b9d",textAlign:"center"}}>
-            {calView==="week"?`${weekDays[0].toLocaleDateString("en-US",{month:"short",day:"numeric"})} – ${weekDays[6].toLocaleDateString("en-US",{month:"short",day:"numeric"})}`:`${MONTH_NAMES[calDate.getMonth()]} ${calDate.getFullYear()}`}
+          <button className="bn" onClick={()=>nav(-1)} style={{background:"#ffd6e7",border:"none",borderRadius:12,width:36,height:36,fontSize:18,cursor:"pointer"}}>{LANG==="he"?"→":"←"}</button>
+          <div style={{fontFamily:"'Fredoka One','Rubik',cursive",fontSize:17,color:"#ff6b9d",textAlign:"center"}}>
+            {calView==="week"?`${weekDays[0].toLocaleDateString(LOCALE(),{month:"short",day:"numeric"})} – ${weekDays[6].toLocaleDateString(LOCALE(),{month:"short",day:"numeric"})}`:calDate.toLocaleDateString(LOCALE(),{month:"long",year:"numeric"})}
           </div>
-          <button className="bn" onClick={()=>nav(1)} style={{background:"#ffd6e7",border:"none",borderRadius:12,width:36,height:36,fontSize:18,cursor:"pointer"}}>→</button>
+          <button className="bn" onClick={()=>nav(1)} style={{background:"#ffd6e7",border:"none",borderRadius:12,width:36,height:36,fontSize:18,cursor:"pointer"}}>{LANG==="he"?"←":"→"}</button>
         </div>
         <div style={{display:"flex",gap:6,background:"#f5f5f5",borderRadius:14,padding:4}}>
           {["week","month"].map(v=>(
@@ -1060,7 +1195,7 @@ function CalendarView({ tasks, done, areas, members, calView, setCalView, calDat
               style={{flex:1,padding:"7px",border:"none",borderRadius:10,fontWeight:800,fontSize:13,fontFamily:"inherit",cursor:"pointer",
                 background:calView===v?"#fff":"transparent",color:calView===v?"#ff6b9d":"#bbb",
                 boxShadow:calView===v?"0 2px 8px rgba(255,107,157,.18)":"none"}}>
-              {v==="week"?"📅 Week":"🗓️ Month"}
+              {v==="week"?tr("📅 Week"):tr("🗓️ Month")}
             </button>
           ))}
         </div>
@@ -1073,7 +1208,7 @@ function CalendarView({ tasks, done, areas, members, calView, setCalView, calDat
       {calView==="month"&&(
         <div style={{background:"#fff",borderRadius:20,padding:"12px",marginBottom:14,border:"2px solid #ffd6e7",boxShadow:"0 4px 16px rgba(255,182,193,.15)"}}>
           <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",marginBottom:6}}>
-            {DAY_SHORT.map(d=><div key={d} style={{textAlign:"center",fontSize:10,fontWeight:900,color:"#ffb3c6",padding:"3px 0"}}>{d}</div>)}
+            {DAY_SHORT_L().map((d,di)=><div key={di} style={{textAlign:"center",fontSize:10,fontWeight:900,color:"#ffb3c6",padding:"3px 0"}}>{d}</div>)}
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:3}}>
             {monthGrid.map(({d,out},i)=><div key={i} style={{opacity:out?.35:1}}><DayChip day={d} small/></div>)}
@@ -1082,12 +1217,12 @@ function CalendarView({ tasks, done, areas, members, calView, setCalView, calDat
       )}
       <div style={{background:"#fff",borderRadius:22,padding:"16px",border:"2px solid #c9f0ff",boxShadow:"0 6px 20px rgba(186,225,255,.25)"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-          <div style={{fontFamily:"'Fredoka One',cursive",fontSize:16,color:"#5bbfdf"}}>
-            {DAY_EMOJI[selectedDay.getDay()]} {selectedDay.toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"})}
+          <div style={{fontFamily:"'Fredoka One','Rubik',cursive",fontSize:16,color:"#5bbfdf"}}>
+            {DAY_EMOJI[selectedDay.getDay()]} {selectedDay.toLocaleDateString(LOCALE(),{weekday:"long",month:"short",day:"numeric"})}
           </div>
           <div style={{background:"#d4f5d4",borderRadius:10,padding:"3px 10px",fontSize:12,fontWeight:800,color:"#5cb85c"}}>{selDoneN}/{selTasks.length} ✓</div>
         </div>
-        {selTasks.length===0?<div style={{textAlign:"center",padding:"18px",color:"#ccc",fontSize:16}}>🌈 Free day!</div>
+        {selTasks.length===0?<div style={{textAlign:"center",padding:"18px",color:"#ccc",fontSize:16}}>{tr("🌈 Free day!")}</div>
           :<div style={{display:"flex",flexDirection:"column",gap:8}}>
             {selTasks.map((task,i)=>(
               <TaskRow key={task.id} task={task} isDone={!!selDone[task.id]}
@@ -1101,7 +1236,7 @@ function CalendarView({ tasks, done, areas, members, calView, setCalView, calDat
 }
 
 // ── Account Sheet ──────────────────────────────────────────────────────────────
-function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose, themeKey, onThemeChange, T=THEMES.fun }) {
+function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose, themeKey, onThemeChange, T=THEMES.fun, lang, onLangChange }) {
   const [inviteEmail,setInviteEmail]=useState("");
   const [inviteMsg,  setInviteMsg]  =useState("");
   const [inviteOk,   setInviteOk]   =useState(false);
@@ -1117,16 +1252,16 @@ function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose, 
   };
   const shareLink=async()=>{
     if(navigator.share){
-      try{ await navigator.share({title:"Happy Home 🏡",text:`Join our household "${household?.name||""}" on Happy Home!`,url:inviteLink}); }catch{}
+      try{ await navigator.share({title:tr("Happy Home 🏡"),text:trf("Join our household \"{name}\" on Happy Home!",{name:household?.name||""}),url:inviteLink}); }catch{}
     } else copyLink();
   };
   const doInvite=async()=>{
     const err=await onInvite(inviteEmail.trim().toLowerCase());
     if(err){setInviteMsg(err);setInviteOk(false);}
-    else{setInviteMsg(`Invite saved! When ${inviteEmail} signs up, they'll join your household 🎉`);setInviteOk(true);setInviteEmail("");}
+    else{setInviteMsg(trf("Invite saved! When {email} signs up, they'll join your household 🎉",{email:inviteEmail}));setInviteOk(true);setInviteEmail("");}
   };
   return(
-    <Sheet title="👤 My Account" onClose={onClose}>
+    <Sheet title={tr("👤 My Account")} onClose={onClose}>
       <div style={{background:"linear-gradient(135deg,#fff8f0,#f0f8ff)",border:"2px solid #ffd6e7",
         borderRadius:18,padding:"16px",marginBottom:18,display:"flex",alignItems:"center",gap:14}}>
         <div style={{width:52,height:52,borderRadius:16,background:"linear-gradient(135deg,#ffb3ba,#c9f0ff)",
@@ -1139,24 +1274,24 @@ function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose, 
           <div style={{fontWeight:900,color:"#444",fontSize:16}}>{user.name}</div>
           <div style={{fontSize:12,color:"#aaa",fontWeight:700}}>{user.email}</div>
           <div style={{marginTop:4}}>
-            <Pill bg={user.authMethod==="google"?"#e8f4ff":"#f5f5f5"}>{user.authMethod==="google"?"🟦 Google":"📧 Email"}</Pill>
+            <Pill bg={user.authMethod==="google"?"#e8f4ff":"#f5f5f5"}>{user.authMethod==="google"?tr("🟦 Google"):tr("📧 Email")}</Pill>
           </div>
         </div>
       </div>
-      <Label>🏠 Household Name</Label>
+      <Label>{tr("🏠 Household Name")}</Label>
       {editName
         ?<div style={{display:"flex",gap:8,marginBottom:14}}>
           <input className="fi" value={houseName} onChange={e=>setHouseName(e.target.value)}
             style={{flex:1,padding:"9px 12px",borderRadius:12,border:"2px solid #ffd6e7",background:"#fff8f0",fontSize:16,color:"#444"}}/>
           <button className="bn" onClick={()=>{onRename(houseName);setEditName(false);}}
-            style={{background:"#baffc9",border:"none",borderRadius:12,padding:"9px 14px",fontWeight:800,fontSize:13,color:"#555",fontFamily:"inherit",cursor:"pointer"}}>Save</button>
+            style={{background:"#baffc9",border:"none",borderRadius:12,padding:"9px 14px",fontWeight:800,fontSize:13,color:"#555",fontFamily:"inherit",cursor:"pointer"}}>{tr("Save")}</button>
         </div>
         :<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,
           background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:12,padding:"10px 14px"}}>
           <span style={{fontWeight:700,color:"#444"}}>{household?.name}</span>
           <button className="bn" onClick={()=>setEditName(true)} style={{background:"none",border:"none",cursor:"pointer",fontSize:16}}>✏️</button>
         </div>}
-      <Label>👥 Members ({household?.members?.length||1})</Label>
+      <Label>{tr("👥 Members")} ({household?.members?.length||1})</Label>
       <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:18}}>
         {(household?.members||[]).map(m=>(
           <div key={m.id} style={{display:"flex",alignItems:"center",gap:10,background:"#f9f9f9",borderRadius:12,padding:"10px 12px",border:"1.5px solid #f0f0f0"}}>
@@ -1165,17 +1300,17 @@ function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose, 
               {initials(m.name)}
             </div>
             <div style={{flex:1}}>
-              <div style={{fontWeight:800,color:"#444",fontSize:16}}>{m.name} {m.id===user.id&&<span style={{fontSize:11,color:"#aaa"}}>(you)</span>}</div>
+              <div style={{fontWeight:800,color:"#444",fontSize:16}}>{m.name} {m.id===user.id&&<span style={{fontSize:11,color:"#aaa"}}>{tr("(you)")}</span>}</div>
               <div style={{fontSize:11,color:"#bbb"}}>{m.email}</div>
             </div>
-            <Pill bg={m.role==="owner"?"#fff0ba":"#f5f5f5"}>{m.role==="owner"?"👑 Owner":"👤 Member"}</Pill>
+            <Pill bg={m.role==="owner"?"#fff0ba":"#f5f5f5"}>{m.role==="owner"?tr("👑 Owner"):tr("👤 Member")}</Pill>
           </div>
         ))}
       </div>
-      <Label>🔗 Family Invite Link</Label>
+      <Label>{tr("🔗 Family Invite Link")}</Label>
       <div style={{background:"linear-gradient(135deg,#f0f8ff,#fff8f0)",border:"2px solid #c9f0ff",borderRadius:16,padding:"14px",marginBottom:18}}>
         <p style={{fontSize:12,color:"#aaa",fontWeight:700,marginBottom:10,lineHeight:1.5}}>
-          Send this link to family members — when they open it and sign in, they join your household 🏡
+          {tr("Send this link to family members — when they open it and sign in, they join your household 🏡")}
         </p>
         <div style={{background:"#fff",border:"1.5px solid #e8e8e8",borderRadius:10,padding:"8px 10px",fontSize:12,color:"#888",
           wordBreak:"break-all",marginBottom:10,fontFamily:"monospace"}}>{inviteLink}</div>
@@ -1183,19 +1318,19 @@ function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose, 
           <button className="bn" onClick={copyLink}
             style={{flex:1,background:linkCopied?"#d4f5d4":"#f5f5f5",border:"none",borderRadius:12,padding:"10px",
               fontWeight:900,fontSize:14,color:linkCopied?"#5cb85c":"#666",fontFamily:"inherit",cursor:"pointer"}}>
-            {linkCopied?"✓ Copied!":"📋 Copy"}
+            {linkCopied?tr("✓ Copied!"):tr("📋 Copy")}
           </button>
           <button className="bn" onClick={shareLink}
             style={{flex:1,background:"linear-gradient(135deg,#ffb3ba,#c9f0ff)",border:"none",borderRadius:12,padding:"10px",
               fontWeight:900,fontSize:14,color:"#555",fontFamily:"inherit",cursor:"pointer"}}>
-            📤 Share
+            {tr("📤 Share")}
           </button>
         </div>
       </div>
-      <Label>✉️ Invite by Email</Label>
+      <Label>{tr("✉️ Invite by Email")}</Label>
       <div style={{background:"linear-gradient(135deg,#fff8f0,#f0fff8)",border:"2px solid #ffd6e7",borderRadius:16,padding:"14px",marginBottom:18}}>
         <p style={{fontSize:12,color:"#aaa",fontWeight:700,marginBottom:10,lineHeight:1.5}}>
-          They'll automatically join your household when they sign up with this email 🏡
+          {tr("They'll automatically join your household when they sign up with this email 🏡")}
         </p>
         <div style={{display:"flex",gap:8}}>
           <input className="fi" value={inviteEmail} onChange={e=>setInviteEmail(e.target.value)}
@@ -1204,7 +1339,7 @@ function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose, 
           <button className="bn" onClick={doInvite}
             style={{background:"linear-gradient(135deg,#ffb3ba,#c9f0ff)",border:"none",borderRadius:12,
               padding:"9px 14px",fontWeight:900,fontSize:13,color:"#555",fontFamily:"inherit",cursor:"pointer",whiteSpace:"nowrap"}}>
-            Send 📨
+            {tr("Send 📨")}
           </button>
         </div>
         {inviteMsg&&(
@@ -1213,7 +1348,19 @@ function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose, 
             border:`1.5px solid ${inviteOk?"#a8e6cf":"#ffb3ba"}`}}>{inviteMsg}</div>
         )}
       </div>
-      <Label T={T}>🎨 App Theme</Label>
+      <Label T={T}>{tr("🌐 Language")}</Label>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:20}}>
+        {[{key:"en",flag:"🇬🇧",label:"English"},{key:"he",flag:"🇮🇱",label:"עברית"}].map(l=>(
+          <div key={l.key} className="bn" onClick={()=>onLangChange(l.key)}
+            style={{padding:"12px 10px",borderRadius:16,textAlign:"center",cursor:"pointer",
+              background:lang===l.key?T.primaryPale:"#f5f5f5",
+              border:`2.5px solid ${lang===l.key?T.primary:"#e0e0e0"}`}}>
+            <div style={{fontSize:26,marginBottom:2}}>{l.flag}</div>
+            <div style={{fontSize:15,fontWeight:900,color:lang===l.key?T.primary:"#888"}}>{l.label}</div>
+          </div>
+        ))}
+      </div>
+      <Label T={T}>{tr("🎨 App Theme")}</Label>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:20}}>
         {Object.entries(THEMES).map(([key,theme])=>(
           <div key={key} className="bn" onClick={()=>onThemeChange(key)}
@@ -1222,20 +1369,20 @@ function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose, 
               border:`2.5px solid ${themeKey===key?theme.primary:"#e0e0e0"}`,
               boxShadow:themeKey===key?`0 4px 14px ${theme.cardShadow}`:"none"}}>
             <div style={{fontSize:28,marginBottom:4}}>{theme.emoji}</div>
-            <div style={{fontFamily:theme.fontFamily,fontSize:13,fontWeight:900,color:theme.primary}}>{theme.name}</div>
+            <div style={{fontFamily:theme.fontFamily,fontSize:13,fontWeight:900,color:theme.primary}}>{tr(theme.name)}</div>
             <div style={{display:"flex",gap:4,justifyContent:"center",marginTop:6}}>
               {[theme.primary,theme.secondary,theme.primaryPale,theme.secondaryPale].map((c,i)=>(
                 <div key={i} style={{width:14,height:14,borderRadius:"50%",background:c}}/>
               ))}
             </div>
-            {themeKey===key&&<div style={{fontSize:11,fontWeight:800,color:theme.primary,marginTop:4}}>✓ Active</div>}
+            {themeKey===key&&<div style={{fontSize:11,fontWeight:800,color:theme.primary,marginTop:4}}>{tr("✓ Active")}</div>}
           </div>
         ))}
       </div>
       <button className="bn" onClick={onLogout}
         style={{width:"100%",padding:"13px",borderRadius:16,border:`2px solid ${T.primaryPale}`,background:T.inputBg,
           fontSize:16,fontWeight:900,color:"#e05080",cursor:"pointer",fontFamily:"inherit"}}>
-        🚪 Sign Out
+        {tr("🚪 Sign Out")}
       </button>
     </Sheet>
   );
@@ -1248,8 +1395,8 @@ function AreaModal({ area, onSave, onClose }) {
   const [emoji,setEmoji]=useState(area?.emoji||"🏠");
   const submit=()=>{if(!name.trim())return;onSave({...(area||{}),name:name.trim(),color,emoji});};
   return(
-    <Sheet title={area?"✏️ Edit Area":"🏠 New Area"} onClose={onClose}>
-      <Label>Pick an Emoji</Label>
+    <Sheet title={area?tr("✏️ Edit Area"):tr("🏠 New Area")} onClose={onClose}>
+      <Label>{tr("Pick an Emoji")}</Label>
       <div style={{display:"flex",gap:7,flexWrap:"wrap",marginBottom:16}}>
         {AREA_EMOJIS.map(e=>(
           <div key={e} className="bn" onClick={()=>setEmoji(e)}
@@ -1258,21 +1405,21 @@ function AreaModal({ area, onSave, onClose }) {
               border:`2.5px solid ${emoji===e?"#ff85a1":"transparent"}`}}>{e}</div>
         ))}
       </div>
-      <Label>Quick Pick</Label>
+      <Label>{tr("Quick Pick")}</Label>
       <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
         {SUGGESTED_AREAS.map(s=>(
-          <div key={s.name} className="bn" onClick={()=>{setName(s.name);setEmoji(s.emoji);setColor(s.color);}}
+          <div key={s.name} className="bn" onClick={()=>{setName(tr(s.name));setEmoji(s.emoji);setColor(s.color);}}
             style={{padding:"5px 11px",borderRadius:20,cursor:"pointer",fontSize:12,fontWeight:700,
-              background: name===s.name ? s.color : "#f5f5f5",
-              border:`2px solid ${name===s.name ? s.color+"bb" : "transparent"}`,
+              background: name===tr(s.name) ? s.color : "#f5f5f5",
+              border:`2px solid ${name===tr(s.name) ? s.color+"bb" : "transparent"}`,
               color:"#555",display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap"}}>
-            {s.emoji} {s.name}
+            {s.emoji} {tr(s.name)}
           </div>
         ))}
       </div>
-      <Label>Area Name</Label>
-      <FInput className="fi" value={name} onChange={e=>setName(e.target.value)} placeholder="Kitchen, Bathroom…" autoFocus onKeyDown={e=>e.key==="Enter"&&submit()}/>
-      <Label>Color</Label>
+      <Label>{tr("Area Name")}</Label>
+      <FInput className="fi" value={name} onChange={e=>setName(e.target.value)} placeholder={tr("Kitchen, Bathroom…")} autoFocus onKeyDown={e=>e.key==="Enter"&&submit()}/>
+      <Label>{tr("Color")}</Label>
       <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
         {PALETTE.map(c=>(
           <div key={c} className="bn" onClick={()=>setColor(c)}
@@ -1280,7 +1427,7 @@ function AreaModal({ area, onSave, onClose }) {
               border:`3px solid ${color===c?"#555":"transparent"}`,boxShadow:color===c?`0 0 0 3px ${c}88`:"none"}}/>
         ))}
       </div>
-      <BigBtn onClick={submit}>{area?"Save Changes 💾":"Create Area 🎉"}</BigBtn>
+      <BigBtn onClick={submit}>{area?tr("Save Changes 💾"):tr("Create Area 🎉")}</BigBtn>
     </Sheet>
   );
 }
@@ -1313,17 +1460,17 @@ function TaskModal({ task, areas, members=[], onSave, onClose }) {
     monthWeekNum:repeatUnit==="months"&&monthMode==="weekday"?monthWeekNum:null,
     notes});};
   return(
-    <Sheet title={task?"✏️ Edit Task":"📋 New Task"} onClose={onClose}>
+    <Sheet title={task?tr("✏️ Edit Task"):tr("📋 New Task")} onClose={onClose}>
       <div style={{display:"flex",gap:10,alignItems:"flex-start",marginBottom:14}}>
         <div>
-          <Label>Emoji</Label>
+          <Label>{tr("Emoji")}</Label>
           <div className="bn" onClick={()=>setShowEM(!showEM)}
             style={{width:54,height:54,borderRadius:16,background:"#fff8f0",border:"2.5px solid #ffd6e7",
               display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,cursor:"pointer"}}>{emoji}</div>
         </div>
         <div style={{flex:1}}>
-          <Label>What to do</Label>
-          <FInput className="fi" value={title} onChange={e=>setTitle(e.target.value)} placeholder="Mop the floor…" autoFocus/>
+          <Label>{tr("What to do")}</Label>
+          <FInput className="fi" value={title} onChange={e=>setTitle(e.target.value)} placeholder={tr("Mop the floor…")} autoFocus/>
         </div>
       </div>
       {showEM&&(
@@ -1336,7 +1483,7 @@ function TaskModal({ task, areas, members=[], onSave, onClose }) {
           ))}
         </div>
       )}
-      <Label>Task Type</Label>
+      <Label>{tr("Task Type")}</Label>
       <div style={{display:"flex",gap:8,marginBottom:14}}>
         {TASK_TYPES.map(t=>(
           <div key={t.val} className="bn" onClick={()=>setTaskType(t.val)}
@@ -1344,18 +1491,18 @@ function TaskModal({ task, areas, members=[], onSave, onClose }) {
               background:taskType===t.val?(t.val==="weekly"?"#c9f0ff":"#fff0ba"):"#f5f5f5",
               border:`2px solid ${taskType===t.val?(t.val==="weekly"?"#5bbfdf":"#ffcc44"):"transparent"}`,
               fontWeight:taskType===t.val?900:600,fontSize:14,color:"#555"}}>
-            {t.emoji} {t.label}
+            {t.emoji} {tr(t.label)}
           </div>
         ))}
       </div>
-      {members.length>1&&<>
-      <Label>Who does it?</Label>
+      {members.length>0&&<>
+      <Label>{tr("Who does it?")}</Label>
       <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
         <div className="bn" onClick={()=>setAssignedTo([])}
           style={{padding:"7px 12px",borderRadius:20,cursor:"pointer",fontSize:13,fontWeight:800,
             background:assignedTo.length===0?"linear-gradient(135deg,#ffb3ba,#c9f0ff)":"#f5f5f5",
             border:`2px solid ${assignedTo.length===0?"#ff85a1":"transparent"}`,color:"#555"}}>
-          👨‍👩‍👧 Anyone
+          {tr("👨‍👩‍👧 Anyone")}
         </div>
         {members.map(m=>{
           const on=assignedTo.includes(m.id);
@@ -1373,8 +1520,13 @@ function TaskModal({ task, areas, members=[], onSave, onClose }) {
           );
         })}
       </div>
+      {members.length===1&&(
+        <div style={{fontSize:12,color:"#aaa",fontWeight:700,marginTop:-6,marginBottom:14}}>
+          💡 {tr("Invite family from settings to assign tasks to them")}
+        </div>
+      )}
       </>}
-      <Label>Time of Day</Label>
+      <Label>{tr("Time of Day")}</Label>
       <div style={{display:"flex",gap:8,marginBottom:14}}>
         {TIME_OF_DAY.map(t=>(
           <div key={t.val} className="bn" onClick={()=>setTimeOfDay(t.val)}
@@ -1391,42 +1543,42 @@ function TaskModal({ task, areas, members=[], onSave, onClose }) {
                 :"transparent"}`,
               fontWeight:timeOfDay===t.val?900:600,fontSize:13,color:"#555"}}>
             <div style={{fontSize:18,marginBottom:2}}>{t.emoji}</div>
-            {t.label}
+            {tr(t.label)}
           </div>
         ))}
       </div>
-      <Label>Area</Label>
+      <Label>{tr("Area")}</Label>
       <select value={areaId} onChange={e=>setAreaId(e.target.value)}
         style={{width:"100%",background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:13,padding:"10px 12px",fontSize:16,marginBottom:14,color:"#555"}}>
-        <option value="">— No area —</option>
-        {areas.map(a=><option key={a.id} value={a.id}>{a.emoji} {a.name}</option>)}
+        <option value="">{tr("— No area —")}</option>
+        {areas.map(a=><option key={a.id} value={a.id}>{a.emoji} {tr(a.name)}</option>)}
       </select>
-      <Label>Cleaning Depth</Label>
+      <Label>{tr("Cleaning Depth")}</Label>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
         {DEPTHS.map(d=>(
-          <div key={d.label} className="bn" onClick={()=>setDepth(d.label)}
+          <div key={tr(d.label)} className="bn" onClick={()=>setDepth(d.label)}
             style={{padding:"9px 10px",borderRadius:13,cursor:"pointer",textAlign:"center",
               background:depth===d.label?d.color:"#f5f5f5",border:`2px solid ${depth===d.label?d.color+"aa":"transparent"}`,
               fontWeight:depth===d.label?900:600,fontSize:13,color:"#555"}}>
-            {d.emoji} {d.label}
+            {d.emoji} {tr(d.label)}
           </div>
         ))}
       </div>
       {taskType==="daily"&&<>
-      <Label>Repeat</Label>
+      <Label>{tr("Repeat")}</Label>
       <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10}}>
         {UNITS.map(u=>(
           <div key={u.val} className="bn" onClick={()=>setRepeatUnit(u.val)}
             style={{padding:"7px 12px",borderRadius:12,cursor:"pointer",textAlign:"center",
               background:repeatUnit===u.val?"#c9f0ff":"#f5f5f5",border:`2px solid ${repeatUnit===u.val?"#5bbfdf":"transparent"}`,
               fontWeight:repeatUnit===u.val?900:600,fontSize:13,color:"#555",whiteSpace:"nowrap"}}>
-            {u.emoji} {u.label}
+            {u.emoji} {tr(u.label)}
           </div>
         ))}
       </div>
       {!isOnce&&(
         <div style={{display:"flex",alignItems:"center",gap:10,background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:14,padding:"10px 14px",marginBottom:14}}>
-          <span style={{fontSize:13,fontWeight:700,color:"#aaa",flex:1}}>Every</span>
+          <span style={{fontSize:13,fontWeight:700,color:"#aaa",flex:1}}>{tr("Every")}</span>
           <button className="bn" onClick={()=>setRepeatEvery(Math.max(1,Number(repeatEvery)-1))}
             style={{width:32,height:32,borderRadius:10,background:"#ffd6e7",border:"none",fontSize:18,fontWeight:900,color:"#ff6b9d",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
           <input type="number" min="1" max="99" value={repeatEvery}
@@ -1434,14 +1586,14 @@ function TaskModal({ task, areas, members=[], onSave, onClose }) {
             style={{width:48,textAlign:"center",background:"#fff",border:"2px solid #ffd6e7",borderRadius:10,padding:"5px",fontSize:18,fontWeight:900,color:"#ff6b9d"}}/>
           <button className="bn" onClick={()=>setRepeatEvery(Math.min(99,Number(repeatEvery)+1))}
             style={{width:32,height:32,borderRadius:10,background:"#ffd6e7",border:"none",fontSize:18,fontWeight:900,color:"#ff6b9d",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>＋</button>
-          <span style={{fontSize:13,fontWeight:700,color:"#aaa"}}>{Number(repeatEvery)===1?(repeatUnit||"weeks").replace(/s$/,""):repeatUnit}</span>
+          <span style={{fontSize:13,fontWeight:700,color:"#aaa"}}>{unitWord(repeatEvery,repeatUnit)}</span>
         </div>
       )}
       {repeatUnit==="weeks"&&(
         <div style={{marginBottom:14}}>
-          <div style={{fontSize:11,fontWeight:900,color:"#ffb3c6",textTransform:"uppercase",letterSpacing:1.2,marginBottom:8}}>On which day(s)</div>
+          <div style={{fontSize:11,fontWeight:900,color:"#ffb3c6",textTransform:"uppercase",letterSpacing:1.2,marginBottom:8}}>{tr("On which day(s)")}</div>
           <div style={{display:"flex",gap:6,justifyContent:"space-between"}}>
-            {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map((d,i)=>{
+            {DAY_NAMES().map((d,i)=>{
               const on=weekDays.includes(i);
               return(
                 <div key={d} className="bn" onClick={()=>setWeekDays(p=>on&&p.length>1?p.filter(x=>x!==i):[...p,i].sort())}
@@ -1458,23 +1610,23 @@ function TaskModal({ task, areas, members=[], onSave, onClose }) {
       )}
       {repeatUnit==="months"&&(
         <div style={{marginBottom:14}}>
-          <div style={{fontSize:11,fontWeight:900,color:"#ffb3c6",textTransform:"uppercase",letterSpacing:1.2,marginBottom:8}}>Repeat on</div>
+          <div style={{fontSize:11,fontWeight:900,color:"#ffb3c6",textTransform:"uppercase",letterSpacing:1.2,marginBottom:8}}>{tr("Repeat on")}</div>
           {/* Mode toggle */}
           <div style={{display:"flex",gap:6,background:"#f5f5f5",borderRadius:14,padding:4,marginBottom:10}}>
-            {[{val:"date",label:"📅 Specific date"},{ val:"weekday",label:"📆 Day of week"}].map(m=>(
+            {[{val:"date",label:tr("📅 Specific date")},{ val:"weekday",label:tr("📆 Day of week")}].map(m=>(
               <div key={m.val} className="bn" onClick={()=>setMonthMode(m.val)}
                 style={{flex:1,padding:"7px",borderRadius:10,textAlign:"center",fontWeight:800,fontSize:12,
                   background:monthMode===m.val?"#fff":"transparent",
                   color:monthMode===m.val?"#ff6b9d":"#bbb",
                   boxShadow:monthMode===m.val?"0 2px 8px rgba(255,107,157,.18)":"none",cursor:"pointer"}}>
-                {m.label}
+                {tr(m.label)}
               </div>
             ))}
           </div>
           {/* Date mode */}
           {monthMode==="date"&&(
             <div style={{display:"flex",alignItems:"center",gap:10,background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:14,padding:"10px 14px"}}>
-              <span style={{fontSize:13,fontWeight:700,color:"#aaa",flex:1}}>Day</span>
+              <span style={{fontSize:13,fontWeight:700,color:"#aaa",flex:1}}>{tr("Day")}</span>
               <button className="bn" onClick={()=>setMonthDay(d=>Math.max(1,Number(d)-1))}
                 style={{width:32,height:32,borderRadius:10,background:"#ffd6e7",border:"none",fontSize:18,fontWeight:900,color:"#ff6b9d",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
               <input type="number" min="1" max="31" value={monthDay}
@@ -1482,7 +1634,7 @@ function TaskModal({ task, areas, members=[], onSave, onClose }) {
                 style={{width:48,textAlign:"center",background:"#fff",border:"2px solid #ffd6e7",borderRadius:10,padding:"5px",fontSize:18,fontWeight:900,color:"#ff6b9d"}}/>
               <button className="bn" onClick={()=>setMonthDay(d=>Math.min(31,Number(d)+1))}
                 style={{width:32,height:32,borderRadius:10,background:"#ffd6e7",border:"none",fontSize:18,fontWeight:900,color:"#ff6b9d",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>＋</button>
-              <span style={{fontSize:13,fontWeight:700,color:"#aaa"}}>of the month</span>
+              <span style={{fontSize:13,fontWeight:700,color:"#aaa"}}>{tr("of the month")}</span>
             </div>
           )}
           {/* Weekday mode */}
@@ -1496,13 +1648,13 @@ function TaskModal({ task, areas, members=[], onSave, onClose }) {
                       background:monthWeekNum===n?"linear-gradient(135deg,#ffb3ba,#c9f0ff)":"#f5f5f5",
                       border:`2px solid ${monthWeekNum===n?"#ff85a1":"transparent"}`,
                       fontSize:12,fontWeight:900,color:monthWeekNum===n?"#ff6b9d":"#bbb"}}>
-                    {["1st","2nd","3rd","4th"][n-1]}
+                    {ORDINALS()[n-1]}
                   </div>
                 ))}
               </div>
               {/* Which day */}
               <div style={{display:"flex",gap:5}}>
-                {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map((d,i)=>(
+                {DAY_NAMES().map((d,i)=>(
                   <div key={d} className="bn" onClick={()=>setMonthWeekDay(i)}
                     style={{flex:1,padding:"8px 2px",borderRadius:12,textAlign:"center",cursor:"pointer",
                       background:monthWeekDay===i?"linear-gradient(135deg,#ffb3ba,#c9f0ff)":"#f5f5f5",
@@ -1517,20 +1669,13 @@ function TaskModal({ task, areas, members=[], onSave, onClose }) {
         </div>
       )}
       <div style={{background:"#f0fff4",border:"2px solid #a8e6cf",borderRadius:12,padding:"8px 14px",marginBottom:14,fontSize:13,fontWeight:700,color:"#5cb85c",textAlign:"center"}}>
-        🔁 {isOnce?"Happens just once"
-          :repeatUnit==="weeks"
-            ?`Every ${repeatEvery} week${repeatEvery>1?"s":""} on ${weekDays.map(d=>["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d]).join(", ")}`
-          :repeatUnit==="months"
-            ?(monthMode==="weekday"
-              ?`Every ${repeatEvery} month${repeatEvery>1?"s":""} on the ${["1st","2nd","3rd","4th"][monthWeekNum-1]} ${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][monthWeekDay]}`
-              :`Every ${repeatEvery} month${repeatEvery>1?"s":""} on the ${monthDay}${["st","nd","rd"][((monthDay%100-11)%10>0&&(monthDay%100-11)%10<3)?(monthDay%100-11)%10-1:Math.min((monthDay%10)-1,2)]||"th"}`)
-          :`Repeats every ${repeatEvery} ${Number(repeatEvery)===1?(repeatUnit||"weeks").replace(/s$/,""):repeatUnit}`}
+        🔁 {repeatSummary({unit:repeatUnit,every:repeatEvery,weekDays,monthMode,monthDay,monthWeekNum,monthWeekDay})}
       </div>
       </>}
-      <Label>Notes (optional)</Label>
-      <textarea value={notes} onChange={e=>setNotes(e.target.value)} rows={2} placeholder="Any details… 📝"
+      <Label>{tr("Notes (optional)")}</Label>
+      <textarea value={notes} onChange={e=>setNotes(e.target.value)} rows={2} placeholder={tr("Any details… 📝")}
         style={{width:"100%",background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:13,padding:"10px 12px",fontSize:16,resize:"vertical",marginBottom:16,color:"#555",fontFamily:"inherit"}}/>
-      <BigBtn onClick={submit}>{task?"Save Changes 💾":"Add Task 🎉"}</BigBtn>
+      <BigBtn onClick={submit}>{task?tr("Save Changes 💾"):tr("Add Task 🎉")}</BigBtn>
     </Sheet>
   );
 }
@@ -1545,7 +1690,7 @@ function Sheet({ title, onClose, children }) {
         width:"100%",maxWidth:520,maxHeight:"92vh",overflowY:"auto",boxShadow:"0 -8px 40px rgba(255,182,193,.35)"}}>
         <div style={{width:38,height:5,background:"#ffd6e7",borderRadius:4,margin:"0 auto 16px"}}/>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
-          <div style={{fontFamily:"'Fredoka One',cursive",fontSize:20,color:"#ff6b9d"}}>{title}</div>
+          <div style={{fontFamily:"'Fredoka One','Rubik',cursive",fontSize:20,color:"#ff6b9d"}}>{title}</div>
           <button className="bn" onClick={onClose}
             style={{background:"#f5f5f5",border:"none",borderRadius:10,width:32,height:32,fontSize:16,cursor:"pointer",fontFamily:"inherit"}}>✕</button>
         </div>
@@ -1560,4 +1705,4 @@ const Label    =({children,T=THEMES.fun})=><div style={{fontSize:11,fontWeight:9
 const FInput   =(props)            =><input {...props} style={{width:"100%",background:"#fff8f0",border:"2px solid #ffd6e7",borderRadius:13,padding:"10px 12px",fontSize:16,marginBottom:14,color:"#555",...props.style}}/>;
 const PastelBtn=({children,onClick,T=THEMES.fun})=><button className="bn" onClick={onClick} style={{background:T.btnGradient,border:"none",borderRadius:14,padding:"10px 16px",fontSize:13,fontWeight:900,color:T.textMain,cursor:"pointer",fontFamily:"inherit",boxShadow:`0 4px 14px ${T.cardShadow}`}}>{children}</button>;
 const BigBtn   =({children,onClick,T=THEMES.fun})=><button className="bn" onClick={onClick} style={{width:"100%",background:T.btnBigGradient,border:"none",borderRadius:16,padding:"14px",fontSize:16,fontWeight:900,color:T.textMain,cursor:"pointer",fontFamily:"inherit",boxShadow:`0 6px 22px ${T.cardShadow}`}}>{children}</button>;
-const Empty    =({emoji,text,sub}) =><div style={{textAlign:"center",padding:"50px 20px"}}><div style={{fontSize:52,marginBottom:10}}>{emoji}</div><div style={{fontFamily:"'Fredoka One',cursive",fontSize:20,color:"#ddd",marginBottom:6}}>{text}</div><div style={{fontSize:13,color:"#ccc"}}>{sub}</div></div>;
+const Empty    =({emoji,text,sub}) =><div style={{textAlign:"center",padding:"50px 20px"}}><div style={{fontSize:52,marginBottom:10}}>{emoji}</div><div style={{fontFamily:"'Fredoka One','Rubik',cursive",fontSize:20,color:"#ddd",marginBottom:6}}>{text}</div><div style={{fontSize:13,color:"#ccc"}}>{sub}</div></div>;
