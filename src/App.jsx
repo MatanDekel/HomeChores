@@ -150,7 +150,7 @@ const HE = {
   // Nav / general
   "Today":"היום","Calendar":"לוח שנה","Tasks":"משימות","Areas":"אזורים","DONE":"בוצע",
   "Happy Home":"בית שמח","Happy Home 🏡":"בית שמח 🏡","Chore Tracker ✨":"מעקב מטלות ✨","Loading…":"טוען…",
-  "Save":"שמור","Taking longer than usual…":"זה לוקח יותר זמן מהרגיל…","Something went wrong":"משהו השתבש",
+  "Save":"שמור","1 member":"חבר/ה אחד/ת","{n} members":"{n} חברים","Taking longer than usual…":"זה לוקח יותר זמן מהרגיל…","Something went wrong":"משהו השתבש",
   "Check your internet connection and try again.":"בדקו את החיבור לאינטרנט ונסו שוב.","Try again":"לנסות שוב",
   "Sign out and sign in again":"להתנתק ולהתחבר מחדש","✏️ Edit":"✏️ עריכה","(you)":"(את/ה)",
   // Auth
@@ -233,7 +233,7 @@ function applyLang(l) {
 applyLang(LANG);
 const tr  = (s) => (LANG==="he" && HE[s]) || s;
 const trf = (s, vars={}) => Object.entries(vars).reduce((acc,[k,v])=>acc.split(`{${k}}`).join(v), tr(s));
-const LOCALE   = () => LANG==="he" ? "he-IL" : LOCALE();
+const LOCALE   = () => LANG==="he" ? "he-IL" : "en-US";
 const DAY_SHORT_L = () => LANG==="he" ? ["א","ב","ג","ד","ה","ו","ש"] : ["S","M","T","W","T","F","S"];
 const DAY_NAMES   = () => LANG==="he" ? ["א׳","ב׳","ג׳","ד׳","ה׳","ו׳","ש׳"] : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const DAY_FULL    = () => LANG==="he" ? ["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"] : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -885,7 +885,7 @@ function App({ user, onLogout }) {
             <div>
               <div style={{fontFamily:T.fontFamily,fontSize:20,color:T.primary,lineHeight:1}}>{household?.name||"Happy Home"}</div>
               <div style={{fontSize:10,color:T.primaryLight,fontWeight:800,letterSpacing:2,textTransform:"uppercase"}}>
-                {household?.members?.length||1} member{(household?.members?.length||1)!==1?"s":""} ✨
+                {(household?.members?.length||1)===1?tr("1 member"):trf("{n} members",{n:household.members.length})} ✨
               </div>
             </div>
           </div>
