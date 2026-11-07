@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   signInWithPopup, signInWithEmailAndPassword,
   createUserWithEmailAndPassword, signOut,
@@ -338,6 +338,7 @@ export default function Root() {
   const [joinBusy, setJoinBusy] = useState(false);
   const [joinError, setJoinError] = useState("");
   const [bootError, setBootError] = useState(null);
+  const bootStep = useRef("auth");
 
   useEffect(() => {
     // Capture ?join=<householdId> from an invite link, then clean the URL
@@ -347,10 +348,11 @@ export default function Root() {
       window.history.replaceState({}, "", window.location.pathname);
     }
 
-    const timeout = setTimeout(() => setBootError(e => e || "timeout"), 15000);
+    const timeout = setTimeout(() => setBootError(e => e || `timeout:${bootStep.current}`), 10000);
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
      try {
       if (!firebaseUser) { clearTimeout(timeout); setUser(null); return; }
+      bootStep.current = "profile";
       setFbUser(firebaseUser);
       const userRef = doc(db, "users", firebaseUser.uid);
       const snap = await getDoc(userRef);
@@ -365,6 +367,7 @@ export default function Root() {
       }
 
       // ── First login ──
+      bootStep.current = "new-user";
       const email = (firebaseUser.email || "").toLowerCase();
       let target = pendingJoin;
       if (!target) {
@@ -515,7 +518,7 @@ function JoinPrompt({ busy, error, onAccept, onDecline }) {
 
 // ── Startup error (instead of an endless loading screen) ─────────────────────
 function BootError({ error }) {
-  const isTimeout = error==="timeout";
+  const isTimeout = String(error).startsWith("timeout");
   return (
     <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh",padding:24,
       background:"linear-gradient(135deg,#ffd6e7,#fff0ba,#c9f0ff)",fontFamily:"'Nunito','Rubik',system-ui,sans-serif"}}>
@@ -528,7 +531,7 @@ function BootError({ error }) {
         <p style={{fontSize:14,color:"#999",fontWeight:600,lineHeight:1.5,marginBottom:14}}>
           {tr("Check your internet connection and try again.")}
         </p>
-        {!isTimeout&&<div style={{fontSize:11,color:"#bbb",fontFamily:"monospace",wordBreak:"break-all",marginBottom:14}}>{error}</div>}
+        <div style={{fontSize:11,color:"#bbb",fontFamily:"monospace",wordBreak:"break-all",marginBottom:14}}>{error}</div>
         <button onClick={()=>window.location.reload()}
           style={{width:"100%",padding:"13px",borderRadius:14,border:"none",cursor:"pointer",fontFamily:"inherit",marginBottom:10,
             background:"linear-gradient(135deg,#ffb3ba,#ffd6a5,#c9f0ff)",fontSize:16,fontWeight:900,color:"#555"}}>
