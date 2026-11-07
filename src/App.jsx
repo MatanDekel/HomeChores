@@ -518,6 +518,7 @@ function Splash() {
 
 // ── Auth Screen ────────────────────────────────────────────────────────────────
 function AuthScreen() {
+  const T = THEMES[localStorage.getItem("hc:theme")] || THEMES.fun;
   const [, forceLang] = useState(LANG);
   const [mode,    setMode]    = useState("login");
   const [name,    setName]    = useState("");
