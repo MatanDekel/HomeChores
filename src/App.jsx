@@ -548,14 +548,28 @@ function BootError({ error }) {
 }
 
 // ── Splash ─────────────────────────────────────────────────────────────────────
+const APP_VERSION = "1107-d";
 function Splash() {
+  const [slow, setSlow] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setSlow(true), 6000); return () => clearTimeout(t); }, []);
   return (
     <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",
-      background:"linear-gradient(135deg,#ffd6e7,#fff0ba,#c9f0ff)",fontFamily:"Nunito,sans-serif"}}>
-      <div style={{textAlign:"center"}}>
+      background:"linear-gradient(135deg,#ffd6e7,#fff0ba,#c9f0ff)",fontFamily:"'Nunito','Rubik',system-ui,sans-serif"}}>
+      <div style={{textAlign:"center",padding:20}}>
         <div style={{fontSize:64,marginBottom:8}}>🏡</div>
         <div style={{fontFamily:"'Fredoka One','Rubik',system-ui,sans-serif",fontWeight:800,fontSize:28,color:"#ff6b9d"}}>{tr("Happy Home")}</div>
         <div style={{fontSize:13,color:"#ffb3c6",marginTop:6}}>{tr("Loading…")}</div>
+        {slow&&(
+          <div style={{marginTop:24}}>
+            <button onClick={()=>window.location.reload()}
+              style={{display:"block",width:240,margin:"0 auto 10px",padding:"11px",borderRadius:14,border:"none",cursor:"pointer",
+                background:"#fff",fontSize:15,fontWeight:800,color:"#ff6b9d",fontFamily:"inherit"}}>🔄 {tr("Try again")}</button>
+            <button onClick={async()=>{ try{ await signOut(auth); }catch{} try{ localStorage.clear(); indexedDB.deleteDatabase("firebaseLocalStorageDb"); }catch{} window.location.reload(); }}
+              style={{display:"block",width:240,margin:"0 auto",padding:"11px",borderRadius:14,border:"2px solid #fff",cursor:"pointer",
+                background:"transparent",fontSize:14,fontWeight:800,color:"#c06080",fontFamily:"inherit"}}>🚪 {tr("Sign out and sign in again")}</button>
+          </div>
+        )}
+        <div style={{fontSize:10,color:"#d8b8c8",marginTop:18}}>v{APP_VERSION}</div>
       </div>
     </div>
   );
