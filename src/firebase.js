@@ -8,7 +8,11 @@ import { initializeFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAy78uI_2E8yWh8IUMk-tMhycQ1lkGi2gE",
-  authDomain: "homechores-92007.firebaseapp.com",
+  // On the live site, auth goes through our own domain (proxied to Firebase in vercel.json).
+  // Needed for Google sign-in on iPhone, where Safari blocks cross-site login storage.
+  authDomain: (typeof window!=="undefined" && window.location.hostname.endsWith(".vercel.app"))
+    ? window.location.hostname
+    : "homechores-92007.firebaseapp.com",
   projectId: "homechores-92007",
   storageBucket: "homechores-92007.firebasestorage.app",
   messagingSenderId: "162987879511",
