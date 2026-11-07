@@ -212,82 +212,177 @@ function isTaskDue(task, date) {
 // ROOT
 // ════════════════════════════════════════════════════════════════════════════════
 export default function Root() {
-  const [user, setUser]     = useState(undefined); // undefined = loading
-  const [fbUser, setFbUser] = useState(null);
+  const [user, setUser]         = useState(undefined); // undefined = loading
+  const [fbUser, setFbUser]     = useState(null);
+  const [joinOffer, setJoinOffer] = useState(null);   // household id an existing user was invited to
+  const [joinBusy, setJoinBusy] = useState(false);
+  const [joinError, setJoinError] = useState("");
 
   useEffect(() => {
+    // Capture ?join=<householdId> from an invite link, then clean the URL
+    const p = new URLSearchParams(window.location.search).get("join");
+    if (p) {
+      localStorage.setItem("hc:join", p);
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       if (!firebaseUser) { setUser(null); return; }
       setFbUser(firebaseUser);
-      // Load or create user doc in Firestore
       const userRef = doc(db, "users", firebaseUser.uid);
       const snap = await getDoc(userRef);
-      if (snap.exists()) {
-        setUser({ id: firebaseUser.uid, ...snap.data() });
-      } else {
-        // First login — create user + household
-        const hid = uid();
-        const userData = {
-          id: firebaseUser.uid,
-          name: firebaseUser.displayName || firebaseUser.email.split("@")[0],
-          email: firebaseUser.email,
-          avatar: firebaseUser.photoURL || GOOGLE_AVATARS[Math.floor(Math.random()*GOOGLE_AVATARS.length)],
-          householdId: hid,
-          authMethod: firebaseUser.providerData[0]?.providerId==="google.com"?"google":"email",
-          createdAt: serverTimestamp(),
-        };
-        await setDoc(userRef, userData);
-        // Create household
-        await setDoc(doc(db, "households", hid), {
-          id: hid,
-          name: `${userData.name.split(" ")[0]}'s Home`,
-          members: [{ id: firebaseUser.uid, name: userData.name, email: userData.email, avatar: userData.avatar, role: "owner" }],
-          createdAt: serverTimestamp(),
-        });
+      const pendingJoin = localStorage.getItem("hc:join");
 
-        // Seed default areas
-        const defaultAreas = [
-          { name: "Kitchen",           emoji: "🍳", color: "#ffb3ba" },
-          { name: "Living Room",       emoji: "🛋️", color: "#ffdfba" },
-          { name: "Guest Bathroom",    emoji: "🚿", color: "#bae1ff" },
-          { name: "Kids Bathroom",     emoji: "🧸", color: "#baffc9" },
-          { name: "Parents Bathroom",  emoji: "🛁", color: "#e8baff" },
-          { name: "Office",            emoji: "🖥️", color: "#fff0ba" },
-          { name: "Master Bedroom",    emoji: "🛏️", color: "#ffc8dd" },
-          { name: "Printer Room",      emoji: "📦", color: "#c9c9c9" },
-          { name: "Safe Room",         emoji: "🚪", color: "#c4a882" },
-          { name: "Balcony",           emoji: "🪴", color: "#a8c5a0" },
-          { name: "Laundry Room",      emoji: "🧺", color: "#d4b896" },
-        ];
-        for (const area of defaultAreas) {
-          const areaRef = doc(collection(db, "households", hid, "areas"));
-          await setDoc(areaRef, { ...area, id: areaRef.id });
-        }
-        // Check for pending invite
-        const inviteRef = doc(db, "invites", firebaseUser.email);
-        const inviteSnap = await getDoc(inviteRef);
-        if (inviteSnap.exists()) {
-          const { householdId: invitedHid, invitedBy } = inviteSnap.data();
-          // Join the inviting household instead
-          userData.householdId = invitedHid;
-          await updateDoc(userRef, { householdId: invitedHid });
-          await updateDoc(doc(db, "households", invitedHid), {
-            members: arrayUnion({ id: firebaseUser.uid, name: userData.name, email: userData.email, avatar: userData.avatar, role: "member" })
-          });
-          // Clean up own new household (empty anyway) and invite
-          await setDoc(doc(db, "households", hid), { deleted: true }, { merge: true });
-        }
-        setUser({ ...userData, id: firebaseUser.uid });
+      if (snap.exists()) {
+        const existing = { id: firebaseUser.uid, ...snap.data() };
+        setUser(existing);
+        if (pendingJoin && pendingJoin !== existing.householdId) setJoinOffer(pendingJoin);
+        else localStorage.removeItem("hc:join");
+        return;
       }
+
+      // ── First login ──
+      const email = (firebaseUser.email || "").toLowerCase();
+      let target = pendingJoin;
+      if (!target) {
+        try {
+          const inv = await getDoc(doc(db, "invites", email));
+          if (inv.exists()) target = inv.data().householdId;
+        } catch {}
+      }
+      const userData = {
+        id: firebaseUser.uid,
+        name: firebaseUser.displayName || email.split("@")[0],
+        email,
+        avatar: firebaseUser.photoURL || GOOGLE_AVATARS[Math.floor(Math.random()*GOOGLE_AVATARS.length)],
+        householdId: target || uid(),
+        authMethod: firebaseUser.providerData[0]?.providerId==="google.com"?"google":"email",
+        createdAt: serverTimestamp(),
+      };
+      await setDoc(userRef, userData);
+
+      if (target) {
+        const ok = await addSelfToHousehold(userData, target);
+        localStorage.removeItem("hc:join");
+        if (ok) { setUser(userData); return; }
+        // Bad link — fall back to a fresh household
+        userData.householdId = uid();
+        await updateDoc(userRef, { householdId: userData.householdId });
+      }
+      await createHousehold(userData);
+      setUser(userData);
     });
     return unsub;
   }, []);
+
+  const acceptJoin = async () => {
+    setJoinBusy(true); setJoinError("");
+    const oldHid = user.householdId;
+    // 1. Leave the current household (allowed while we still belong to it)
+    try {
+      const oldSnap = await getDoc(doc(db, "households", oldHid));
+      if (oldSnap.exists()) {
+        await updateDoc(doc(db, "households", oldHid), {
+          members: (oldSnap.data().members||[]).filter(m=>m.id!==user.id)
+        });
+      }
+    } catch {}
+    // 2. Switch + join the new one
+    await updateDoc(doc(db, "users", user.id), { householdId: joinOffer });
+    const ok = await addSelfToHousehold(user, joinOffer);
+    if (!ok) {
+      await updateDoc(doc(db, "users", user.id), { householdId: oldHid });
+      try {
+        await updateDoc(doc(db, "households", oldHid), {
+          members: arrayUnion({ id:user.id, name:user.name, email:user.email, avatar:user.avatar||"", role:"owner" })
+        });
+      } catch {}
+      setJoinError("This invite link isn't valid anymore 😕");
+      setJoinBusy(false);
+      return;
+    }
+    localStorage.removeItem("hc:join");
+    setUser(u => ({ ...u, householdId: joinOffer }));
+    setJoinOffer(null);
+    setJoinBusy(false);
+  };
+  const declineJoin = () => { localStorage.removeItem("hc:join"); setJoinOffer(null); };
 
   const logout = () => signOut(auth);
 
   if (user === undefined) return <Splash/>;
   if (!user) return <AuthScreen/>;
+  if (joinOffer) return <JoinPrompt busy={joinBusy} error={joinError} onAccept={acceptJoin} onDecline={declineJoin}/>;
   return <App user={user} fbUser={fbUser} onLogout={logout}/>;
+}
+
+// Adds the user to a household's members list. Requires the user doc to already point at it.
+async function addSelfToHousehold(u, hid) {
+  try {
+    const ref = doc(db, "households", hid);
+    const hs = await getDoc(ref);
+    if (!hs.exists() || hs.data().deleted) return false;
+    const members = (hs.data().members||[]).filter(m=>m.id!==u.id);
+    members.push({ id:u.id, name:u.name, email:u.email, avatar:u.avatar||"", role:"member" });
+    await updateDoc(ref, { members });
+    return true;
+  } catch { return false; }
+}
+
+async function createHousehold(u) {
+  const hid = u.householdId;
+  await setDoc(doc(db, "households", hid), {
+    id: hid,
+    name: `${u.name.split(" ")[0]}'s Home`,
+    members: [{ id:u.id, name:u.name, email:u.email, avatar:u.avatar||"", role:"owner" }],
+    createdAt: serverTimestamp(),
+  });
+  const defaultAreas = [
+    { name: "Kitchen",           emoji: "🍳", color: "#ffb3ba" },
+    { name: "Living Room",       emoji: "🛋️", color: "#ffdfba" },
+    { name: "Guest Bathroom",    emoji: "🚿", color: "#bae1ff" },
+    { name: "Kids Bathroom",     emoji: "🧸", color: "#baffc9" },
+    { name: "Parents Bathroom",  emoji: "🛁", color: "#e8baff" },
+    { name: "Office",            emoji: "🖥️", color: "#fff0ba" },
+    { name: "Master Bedroom",    emoji: "🛏️", color: "#ffc8dd" },
+    { name: "Printer Room",      emoji: "📦", color: "#c9c9c9" },
+    { name: "Safe Room",         emoji: "🚪", color: "#c4a882" },
+    { name: "Balcony",           emoji: "🪴", color: "#a8c5a0" },
+    { name: "Laundry Room",      emoji: "🧺", color: "#d4b896" },
+  ];
+  for (const area of defaultAreas) {
+    const areaRef = doc(collection(db, "households", hid, "areas"));
+    await setDoc(areaRef, { ...area, id: areaRef.id });
+  }
+}
+
+// ── Join prompt (existing user opened an invite link) ──────────────────────────
+function JoinPrompt({ busy, error, onAccept, onDecline }) {
+  return (
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:20,
+      background:"radial-gradient(ellipse at 30% 0%,#ffe8f0,#fff8e7 50%,#e8f4ff)",fontFamily:"'Nunito','Segoe UI',sans-serif"}}>
+      <div style={{background:"#fff",borderRadius:28,padding:"28px 24px",width:"100%",maxWidth:400,textAlign:"center",
+        boxShadow:"0 12px 48px rgba(255,182,193,.3)",border:"2px solid #ffd6e7"}}>
+        <div style={{fontSize:54,marginBottom:8}}>💌</div>
+        <div style={{fontFamily:"'Fredoka One',cursive",fontSize:22,color:"#ff6b9d",marginBottom:8}}>You've been invited!</div>
+        <p style={{fontSize:14,color:"#888",fontWeight:600,lineHeight:1.6,marginBottom:20}}>
+          Join this family's household? You'll see and share all of their tasks.
+          You'll leave your current household.
+        </p>
+        {error&&<div style={{background:"#fff0f3",border:"2px solid #ffb3ba",borderRadius:12,padding:"10px",marginBottom:14,fontSize:13,fontWeight:700,color:"#e05080"}}>{error}</div>}
+        <button onClick={onAccept} disabled={busy}
+          style={{width:"100%",padding:"13px",borderRadius:16,border:"none",cursor:"pointer",fontFamily:"inherit",marginBottom:10,
+            background:"linear-gradient(135deg,#ffb3ba,#ffd6a5,#c9f0ff)",fontSize:16,fontWeight:900,color:"#555",opacity:busy?.6:1}}>
+          {busy?"Joining…":"Join household 🏡"}
+        </button>
+        <button onClick={onDecline} disabled={busy}
+          style={{width:"100%",padding:"12px",borderRadius:16,border:"2px solid #eee",background:"#fff",cursor:"pointer",
+            fontFamily:"inherit",fontSize:15,fontWeight:800,color:"#aaa"}}>
+          Not now
+        </button>
+      </div>
+    </div>
+  );
 }
 
 // ── Splash ─────────────────────────────────────────────────────────────────────
@@ -371,6 +466,12 @@ function AuthScreen() {
       </div>
       <div className="fu" style={{background:"#fff",borderRadius:28,padding:"28px 24px",width:"100%",maxWidth:400,
         boxShadow:"0 12px 48px rgba(255,182,193,.3)",border:"2px solid #ffd6e7"}}>
+        {localStorage.getItem("hc:join")&&(
+          <div style={{background:"linear-gradient(135deg,#fff0ba,#ffd6e7)",borderRadius:14,padding:"10px 14px",marginBottom:16,
+            textAlign:"center",fontSize:13,fontWeight:800,color:"#c06080"}}>
+            💌 You've been invited to a household! Sign in or sign up to join.
+          </div>
+        )}
         <h2 style={{fontFamily:"'Fredoka One',cursive",fontSize:22,color:"#ff6b9d",marginBottom:4,textAlign:"center"}}>
           {isLogin?"Welcome back! 👋":"Create account 🌟"}
         </h2>
@@ -820,7 +921,8 @@ function App({ user, onLogout }) {
                         <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
                           {area&&<Pill bg={area.color}>{area.emoji} {area.name}</Pill>}
                           <Pill bg={dep.color}>{dep.emoji} {dep.label}</Pill>
-                          <Pill bg="#e8f4ff">{repeatLabel(task)}</Pill>
+                          <Pill bg="#e8f4ff">{task.taskType==="weekly"?"📋 Weekly":repeatLabel(task)}</Pill>
+                          {(task.assignedTo||[]).length>0&&<Pill bg="#fff0ba">👤 {(task.assignedTo||[]).map(id=>household?.members?.find(m=>m.id===id)?.name.split(" ")[0]).filter(Boolean).join(", ")}</Pill>}
                         </div>
                       </div>
                       <div style={{display:"flex",gap:5,flexShrink:0}}>
@@ -872,7 +974,7 @@ function App({ user, onLogout }) {
       </div>
 
       {areaModal!==null&&<AreaModal area={areaModal.id?areaModal:null} onSave={saveArea} onClose={()=>setAreaModal(null)}/>}
-      {taskModal!==null&&<TaskModal task={taskModal.id?taskModal:null} areas={areas} onSave={saveTask} onClose={()=>setTaskModal(null)}/>}
+      {taskModal!==null&&<TaskModal task={taskModal.id?taskModal:null} areas={areas} members={household?.members||[]} onSave={saveTask} onClose={()=>setTaskModal(null)}/>}
       {showAccount&&(
         <AccountSheet user={user} household={household} onInvite={sendInvite}
           onRename={renameHousehold} onLogout={onLogout} onClose={()=>setShowAccount(false)}
@@ -885,7 +987,7 @@ function App({ user, onLogout }) {
 // ── Task Row ───────────────────────────────────────────────────────────────────
 function TaskRow({ task, isDone, area, delay=0, onToggle, members=[], accent=null }) {
   const dep=DEPTHS.find(d=>d.label===task.depth)||DEPTHS[0];
-  const creator=members.find(m=>m.id===task.createdBy);
+  const assignees=(task.assignedTo||[]).map(id=>members.find(m=>m.id===id)).filter(Boolean);
   const borderColor = isDone?"#e0e0e0": area?.color || accent || "#ffd6e7";
   return(
     <div className="trow fu" style={{animationDelay:`${delay}s`,background:isDone?"#f9f9f9":"#fff",
@@ -905,7 +1007,7 @@ function TaskRow({ task, isDone, area, delay=0, onToggle, members=[], accent=nul
         <div style={{display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
           {area&&<Pill bg={isDone?"#eee":area.color}>{area.emoji} {area.name}</Pill>}
           <Pill bg={isDone?"#eee":dep.color}>{dep.emoji} {dep.label}</Pill>
-          {creator&&<Pill bg="#f5f5f5">👤 {creator.name.split(" ")[0]}</Pill>}
+          {assignees.length>0&&<Pill bg={isDone?"#eee":"#fff0ba"}>👤 {assignees.map(m=>m.name.split(" ")[0]).join(", ")}</Pill>}
         </div>
       </div>
     </div>
@@ -1005,6 +1107,19 @@ function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose, 
   const [inviteOk,   setInviteOk]   =useState(false);
   const [editName,   setEditName]   =useState(false);
   const [houseName,  setHouseName]  =useState(household?.name||"");
+  const [linkCopied, setLinkCopied]=useState(false);
+  const inviteLink=`${window.location.origin}/?join=${user.householdId}`;
+  const copyLink=async()=>{
+    try{ await navigator.clipboard.writeText(inviteLink); }catch{
+      const ta=document.createElement("textarea"); ta.value=inviteLink; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
+    }
+    setLinkCopied(true); setTimeout(()=>setLinkCopied(false),2000);
+  };
+  const shareLink=async()=>{
+    if(navigator.share){
+      try{ await navigator.share({title:"Happy Home 🏡",text:`Join our household "${household?.name||""}" on Happy Home!`,url:inviteLink}); }catch{}
+    } else copyLink();
+  };
   const doInvite=async()=>{
     const err=await onInvite(inviteEmail.trim().toLowerCase());
     if(err){setInviteMsg(err);setInviteOk(false);}
@@ -1057,7 +1172,27 @@ function AccountSheet({ user, household, onInvite, onRename, onLogout, onClose, 
           </div>
         ))}
       </div>
-      <Label>✉️ Invite Someone</Label>
+      <Label>🔗 Family Invite Link</Label>
+      <div style={{background:"linear-gradient(135deg,#f0f8ff,#fff8f0)",border:"2px solid #c9f0ff",borderRadius:16,padding:"14px",marginBottom:18}}>
+        <p style={{fontSize:12,color:"#aaa",fontWeight:700,marginBottom:10,lineHeight:1.5}}>
+          Send this link to family members — when they open it and sign in, they join your household 🏡
+        </p>
+        <div style={{background:"#fff",border:"1.5px solid #e8e8e8",borderRadius:10,padding:"8px 10px",fontSize:12,color:"#888",
+          wordBreak:"break-all",marginBottom:10,fontFamily:"monospace"}}>{inviteLink}</div>
+        <div style={{display:"flex",gap:8}}>
+          <button className="bn" onClick={copyLink}
+            style={{flex:1,background:linkCopied?"#d4f5d4":"#f5f5f5",border:"none",borderRadius:12,padding:"10px",
+              fontWeight:900,fontSize:14,color:linkCopied?"#5cb85c":"#666",fontFamily:"inherit",cursor:"pointer"}}>
+            {linkCopied?"✓ Copied!":"📋 Copy"}
+          </button>
+          <button className="bn" onClick={shareLink}
+            style={{flex:1,background:"linear-gradient(135deg,#ffb3ba,#c9f0ff)",border:"none",borderRadius:12,padding:"10px",
+              fontWeight:900,fontSize:14,color:"#555",fontFamily:"inherit",cursor:"pointer"}}>
+            📤 Share
+          </button>
+        </div>
+      </div>
+      <Label>✉️ Invite by Email</Label>
       <div style={{background:"linear-gradient(135deg,#fff8f0,#f0fff8)",border:"2px solid #ffd6e7",borderRadius:16,padding:"14px",marginBottom:18}}>
         <p style={{fontSize:12,color:"#aaa",fontWeight:700,marginBottom:10,lineHeight:1.5}}>
           They'll automatically join your household when they sign up with this email 🏡
@@ -1151,7 +1286,7 @@ function AreaModal({ area, onSave, onClose }) {
 }
 
 // ── Task Modal ─────────────────────────────────────────────────────────────────
-function TaskModal({ task, areas, onSave, onClose }) {
+function TaskModal({ task, areas, members=[], onSave, onClose }) {
   const [title,      setTitle]      =useState(task?.title||"");
   const [emoji,      setEmoji]      =useState(task?.emoji||"🧹");
   const [areaId,     setAreaId]     =useState(task?.areaId||areas[0]?.id||"");
@@ -1165,10 +1300,12 @@ function TaskModal({ task, areas, onSave, onClose }) {
   const [monthWeekNum,setMonthWeekNum]=useState(task?.monthWeekNum||1); // 1-4
   const [taskType,   setTaskType]   =useState(task?.taskType||"daily");
   const [timeOfDay,  setTimeOfDay]  =useState(task?.timeOfDay||"anytime");
+  const [assignedTo, setAssignedTo] =useState(task?.assignedTo||[]); // [] = everyone
+  const toggleAssignee=(id)=>setAssignedTo(p=>p.includes(id)?p.filter(x=>x!==id):[...p,id]);
   const [notes,      setNotes]      =useState(task?.notes||"");
   const [showEM,     setShowEM]     =useState(false);
   const isOnce=repeatUnit==="once";
-  const submit=()=>{if(!title.trim())return;onSave({...(task||{}),title:title.trim(),emoji,areaId,depth,taskType,timeOfDay,repeatUnit,repeatEvery:Number(repeatEvery),
+  const submit=()=>{if(!title.trim())return;onSave({...(task||{}),title:title.trim(),emoji,areaId,depth,taskType,timeOfDay,assignedTo,repeatUnit,repeatEvery:Number(repeatEvery),
     weekDays:repeatUnit==="weeks"?weekDays:null,
     monthDay:repeatUnit==="months"&&monthMode==="date"?Number(monthDay):null,
     monthMode:repeatUnit==="months"?monthMode:null,
@@ -1211,6 +1348,32 @@ function TaskModal({ task, areas, onSave, onClose }) {
           </div>
         ))}
       </div>
+      {members.length>1&&<>
+      <Label>Who does it?</Label>
+      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
+        <div className="bn" onClick={()=>setAssignedTo([])}
+          style={{padding:"7px 12px",borderRadius:20,cursor:"pointer",fontSize:13,fontWeight:800,
+            background:assignedTo.length===0?"linear-gradient(135deg,#ffb3ba,#c9f0ff)":"#f5f5f5",
+            border:`2px solid ${assignedTo.length===0?"#ff85a1":"transparent"}`,color:"#555"}}>
+          👨‍👩‍👧 Anyone
+        </div>
+        {members.map(m=>{
+          const on=assignedTo.includes(m.id);
+          return(
+            <div key={m.id} className="bn" onClick={()=>toggleAssignee(m.id)}
+              style={{padding:"5px 12px 5px 5px",borderRadius:20,cursor:"pointer",fontSize:13,fontWeight:800,
+                display:"flex",alignItems:"center",gap:6,
+                background:on?"#fff0ba":"#f5f5f5",border:`2px solid ${on?"#f5c842":"transparent"}`,color:"#555"}}>
+              <span style={{width:24,height:24,borderRadius:"50%",background:"linear-gradient(135deg,#ffd6e7,#c9f0ff)",
+                display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:900,color:"#ff6b9d"}}>
+                {initials(m.name)}
+              </span>
+              {m.name.split(" ")[0]}
+            </div>
+          );
+        })}
+      </div>
+      </>}
       <Label>Time of Day</Label>
       <div style={{display:"flex",gap:8,marginBottom:14}}>
         {TIME_OF_DAY.map(t=>(
