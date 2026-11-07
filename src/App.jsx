@@ -150,7 +150,9 @@ const HE = {
   // Nav / general
   "Today":"היום","Calendar":"לוח שנה","Tasks":"משימות","Areas":"אזורים","DONE":"בוצע",
   "Happy Home":"בית שמח","Happy Home 🏡":"בית שמח 🏡","Chore Tracker ✨":"מעקב מטלות ✨","Loading…":"טוען…",
-  "Save":"שמור","✏️ Edit":"✏️ עריכה","(you)":"(את/ה)",
+  "Save":"שמור","Taking longer than usual…":"זה לוקח יותר זמן מהרגיל…","Something went wrong":"משהו השתבש",
+  "Check your internet connection and try again.":"בדקו את החיבור לאינטרנט ונסו שוב.","Try again":"לנסות שוב",
+  "Sign out and sign in again":"להתנתק ולהתחבר מחדש","✏️ Edit":"✏️ עריכה","(you)":"(את/ה)",
   // Auth
   "Welcome back! 👋":"ברוכים השבים! 👋","Create account 🌟":"יצירת חשבון 🌟",
   "Sign in to your household":"התחברות למשק הבית","Join or start a household":"הצטרפות או פתיחת משק בית",
@@ -335,6 +337,7 @@ export default function Root() {
   const [joinOffer, setJoinOffer] = useState(null);   // household id an existing user was invited to
   const [joinBusy, setJoinBusy] = useState(false);
   const [joinError, setJoinError] = useState("");
+  const [bootError, setBootError] = useState(null);
 
   useEffect(() => {
     // Capture ?join=<householdId> from an invite link, then clean the URL
@@ -344,8 +347,10 @@ export default function Root() {
       window.history.replaceState({}, "", window.location.pathname);
     }
 
+    const timeout = setTimeout(() => setBootError(e => e || "timeout"), 15000);
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (!firebaseUser) { setUser(null); return; }
+     try {
+      if (!firebaseUser) { clearTimeout(timeout); setUser(null); return; }
       setFbUser(firebaseUser);
       const userRef = doc(db, "users", firebaseUser.uid);
       const snap = await getDoc(userRef);
@@ -389,8 +394,14 @@ export default function Root() {
       }
       await createHousehold(userData);
       setUser(userData);
+     } catch (err) {
+      console.error("Startup failed:", err);
+      setBootError(err?.code || err?.message || String(err));
+     } finally {
+      clearTimeout(timeout);
+     }
     });
-    return unsub;
+    return () => { clearTimeout(timeout); unsub(); };
   }, []);
 
   const acceptJoin = async () => {
@@ -428,7 +439,7 @@ export default function Root() {
 
   const logout = () => signOut(auth);
 
-  if (user === undefined) return <Splash/>;
+  if (user === undefined) return bootError ? <BootError error={bootError}/> : <Splash/>;
   if (!user) return <AuthScreen/>;
   if (joinOffer) return <JoinPrompt busy={joinBusy} error={joinError} onAccept={acceptJoin} onDecline={declineJoin}/>;
   return <App user={user} fbUser={fbUser} onLogout={logout}/>;
@@ -502,6 +513,37 @@ function JoinPrompt({ busy, error, onAccept, onDecline }) {
   );
 }
 
+// ── Startup error (instead of an endless loading screen) ─────────────────────
+function BootError({ error }) {
+  const isTimeout = error==="timeout";
+  return (
+    <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh",padding:24,
+      background:"linear-gradient(135deg,#ffd6e7,#fff0ba,#c9f0ff)",fontFamily:"'Nunito','Rubik',system-ui,sans-serif"}}>
+      <div style={{background:"#fff",borderRadius:24,padding:"24px 20px",maxWidth:380,width:"100%",textAlign:"center",
+        boxShadow:"0 12px 40px rgba(255,182,193,.3)",border:"2px solid #ffd6e7"}}>
+        <div style={{fontSize:48,marginBottom:6}}>{isTimeout?"⏳":"😕"}</div>
+        <div style={{fontSize:20,fontWeight:900,color:"#ff6b9d",marginBottom:8}}>
+          {isTimeout?tr("Taking longer than usual…"):tr("Something went wrong")}
+        </div>
+        <p style={{fontSize:14,color:"#999",fontWeight:600,lineHeight:1.5,marginBottom:14}}>
+          {tr("Check your internet connection and try again.")}
+        </p>
+        {!isTimeout&&<div style={{fontSize:11,color:"#bbb",fontFamily:"monospace",wordBreak:"break-all",marginBottom:14}}>{error}</div>}
+        <button onClick={()=>window.location.reload()}
+          style={{width:"100%",padding:"13px",borderRadius:14,border:"none",cursor:"pointer",fontFamily:"inherit",marginBottom:10,
+            background:"linear-gradient(135deg,#ffb3ba,#ffd6a5,#c9f0ff)",fontSize:16,fontWeight:900,color:"#555"}}>
+          🔄 {tr("Try again")}
+        </button>
+        <button onClick={async()=>{ try{ await signOut(auth); }catch{} window.location.reload(); }}
+          style={{width:"100%",padding:"12px",borderRadius:14,border:"2px solid #eee",background:"#fff",cursor:"pointer",
+            fontFamily:"inherit",fontSize:15,fontWeight:800,color:"#aaa"}}>
+          🚪 {tr("Sign out and sign in again")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Splash ─────────────────────────────────────────────────────────────────────
 function Splash() {
   return (
@@ -509,7 +551,7 @@ function Splash() {
       background:"linear-gradient(135deg,#ffd6e7,#fff0ba,#c9f0ff)",fontFamily:"Nunito,sans-serif"}}>
       <div style={{textAlign:"center"}}>
         <div style={{fontSize:64,marginBottom:8}}>🏡</div>
-        <div style={{fontFamily:"'Fredoka One','Rubik',cursive",fontSize:28,color:"#ff6b9d"}}>{tr("Happy Home")}</div>
+        <div style={{fontFamily:"'Fredoka One','Rubik',system-ui,sans-serif",fontWeight:800,fontSize:28,color:"#ff6b9d"}}>{tr("Happy Home")}</div>
         <div style={{fontSize:13,color:"#ffb3c6",marginTop:6}}>{tr("Loading…")}</div>
       </div>
     </div>
