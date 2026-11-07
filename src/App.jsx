@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
-  signInWithPopup, signInWithEmailAndPassword,
+  signInWithPopup, signInWithRedirect, getRedirectResult, signInWithEmailAndPassword,
   createUserWithEmailAndPassword, signOut,
   onAuthStateChanged, updateProfile
 } from "firebase/auth";
@@ -587,12 +587,28 @@ function AuthScreen() {
   const [loading, setLoading] = useState(false);
   const [showPass,setShowPass]= useState(false);
 
+  // Surface errors coming back from a redirect sign-in
+  useEffect(() => {
+    getRedirectResult(auth).catch(e => {
+      console.error("Redirect sign-in failed:", e);
+      setError(`${tr("Google sign-in failed. Try again 🔄")} (${e.code||e.message})`);
+    });
+  }, []);
+
   const handleGoogle = async () => {
     setLoading(true); setError("");
+    // Home-screen apps (and iPhone in general) can't use popups reliably → full-page redirect
+    const isStandalone = window.matchMedia?.("(display-mode: standalone)").matches || window.navigator.standalone;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
     try {
+      if (isStandalone || isIOS) {
+        await signInWithRedirect(auth, googleProvider);
+        return; // page navigates away
+      }
       await signInWithPopup(auth, googleProvider);
     } catch(e) {
-      setError(tr("Google sign-in failed. Try again 🔄"));
+      console.error("Google sign-in failed:", e);
+      setError(`${tr("Google sign-in failed. Try again 🔄")} (${e.code||e.message})`);
       setLoading(false);
     }
   };
