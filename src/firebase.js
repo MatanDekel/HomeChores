@@ -1,6 +1,9 @@
 // src/firebase.js
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import {
+  initializeAuth, indexedDBLocalPersistence, browserLocalPersistence,
+  browserPopupRedirectResolver, GoogleAuthProvider
+} from "firebase/auth";
 import { initializeFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -14,7 +17,11 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+// Fall back to localStorage if IndexedDB misbehaves (happens in iOS home-screen apps)
+export const auth = initializeAuth(app, {
+  persistence: [indexedDBLocalPersistence, browserLocalPersistence],
+  popupRedirectResolver: browserPopupRedirectResolver,
+});
 // Long polling avoids the streaming-connection hangs Safari / iOS home-screen apps sometimes hit
 export const db = initializeFirestore(app, { experimentalForceLongPolling: true });
 export const googleProvider = new GoogleAuthProvider();
